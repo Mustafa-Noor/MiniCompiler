@@ -1,0 +1,7 @@
+SLR(1) Parser Trace
+========================================================================================================================
+Step  State Stack          Symbol Stack                             Input                          Action              
+------------------------------------------------------------------------------------------------------------------------
+Step 1     0                    $                                        program GCD ;                  SHIFT → state 1
+Step 2     0 1                  $ KEYWORD_program                        GCD ; var                      SHIFT → state 3
+Step 3: ERROR - Parse error at state 3, input SEMICOLON

@@ -532,17 +532,12 @@ def main():
     
     # Generate main documentation
     doc = generate_documentation()
-    with open(doc_dir / "PARSER_DOCUMENTATION.md", 'w', encoding='utf-8') as f:
+    with open(doc_dir / "DOCUMENTATION.md", 'w', encoding='utf-8') as f:
         f.write(doc)
     
-    # Generate README
-    readme = create_readme()
-    with open(doc_dir / "README.md", 'w', encoding='utf-8') as f:
-        f.write(readme)
-    
     print("Documentation generated successfully!")
-    print(f"  - PARSER_DOCUMENTATION.md")
-    print(f"  - README.md")
+    print(f"  - DOCUMENTATION.md")
+    print("  - README.md (edit manually; not overwritten by this script)")
 
 
 if __name__ == '__main__':

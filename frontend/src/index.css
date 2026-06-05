@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --color-vscode-bg: #1e1e1e;
+  --color-vscode-sidebar: #252526;
+  --color-vscode-panel: #2d2d30;
+  --color-vscode-border: #3c3c3c;
+  --color-vscode-accent: #007acc;
+  --color-vscode-green: #4ec9b0;
+  --color-vscode-orange: #ce9178;
+  --color-vscode-purple: #c586c0;
+  --color-vscode-blue: #569cd6;
+  --color-vscode-yellow: #dcdcaa;
+  --font-mono: "Cascadia Code", "Fira Code", "Consolas", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  -webkit-font-smoothing: antialiased;
+}
+
+.glass {
+  background: rgba(45, 45, 48, 0.65);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(37, 37, 38, 0.9), rgba(30, 30, 30, 0.85));
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #484848;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.editor-line-numbers {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  tab-size: 4;
+}
+
+.token-keyword { color: #569cd6; }
+.token-id { color: #9cdcfe; }
+.token-number { color: #b5cea8; }
+.token-string { color: #ce9178; }
+.token-comment { color: #6a9955; font-style: italic; }
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(0, 122, 204, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(0, 122, 204, 0.6); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}

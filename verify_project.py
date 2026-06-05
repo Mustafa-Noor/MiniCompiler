@@ -78,9 +78,8 @@ def verify_project():
     
     # Required documentation files
     doc_files = [
-        ("Parser Documentation", "PARSER_DOCUMENTATION.md"),
         ("README", "README.md"),
-        ("Implementation Summary", "IMPLEMENTATION_SUMMARY.md"),
+        ("Technical Documentation", "DOCUMENTATION.md"),
         ("Test Runners", "test_parsers.py"),
         ("Doc Generator", "generate_docs.py"),
     ]
@@ -153,9 +152,8 @@ def verify_project():
     print("│   ├── grammar_transformation.txt (Transformation documentation)")
     print("│   ├── rd_trace.txt              (RD parser trace)")
     print("│   └── predictive_trace.txt      (Predictive parser trace)")
-    print("├── PARSER_DOCUMENTATION.md       (Complete system documentation)")
-    print("├── README.md                     (Quick start guide)")
-    print("├── IMPLEMENTATION_SUMMARY.md     (Project completion summary)")
+    print("├── README.md                     (Project overview and quick start)")
+    print("├── DOCUMENTATION.md              (Technical implementation reference)")
     print("├── test_parsers.py               (Test runner script)")
     print("├── generate_docs.py              (Documentation generator)")
     print("├── simple_valid.pas              (Valid test program)")

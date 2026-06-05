@@ -1,0 +1,5 @@
+→ program (Found: KEYWORD_PROGRAM)
+  [Match] KEYWORD_PROGRAM = program
+  [Match] ID = GCD
+ERROR: Syntax Error: Line 1, Column 13: Expected (, found ; (SEMICOLON)
+← program ✗

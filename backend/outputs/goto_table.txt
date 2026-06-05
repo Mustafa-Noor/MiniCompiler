@@ -1,0 +1,236 @@
+GOTO Table
+====================================================================================================
+
+State 0:
+  program              → 2
+
+State 4:
+  id_list              → 6
+
+State 5:
+  id_list_prime        → 8
+
+State 10:
+  id_list_prime        → 12
+
+State 11:
+  declarations         → 14
+
+State 13:
+  id_list              → 15
+
+State 14:
+  subprogram_decl      → 18
+  subprogram_decls     → 19
+  subprogram_head      → 20
+
+State 19:
+  compound_stmt        → 26
+
+State 20:
+  declarations         → 27
+
+State 21:
+  type_spec            → 31
+
+State 22:
+  arguments            → 33
+
+State 23:
+  arguments            → 34
+
+State 24:
+  subprogram_decl      → 18
+  subprogram_decls     → 35
+  subprogram_head      → 20
+
+State 25:
+  compound_stmt        → 39
+  optional_stmts       → 40
+  statement            → 41
+  stmt_list            → 42
+  var_or_proc_call     → 43
+
+State 27:
+  compound_stmt        → 45
+
+State 32:
+  id_list              → 48
+  param_list           → 49
+
+State 36:
+  var_or_proc_tail     → 55
+
+State 37:
+  expression           → 62
+  factor               → 63
+  sign                 → 64
+  simple_expr          → 65
+  term                 → 66
+
+State 38:
+  expression           → 67
+  factor               → 63
+  sign                 → 64
+  simple_expr          → 65
+  term                 → 66
+
+State 41:
+  stmt_list_prime      → 70
+
+State 43:
+  stmt_tail            → 71
+
+State 47:
+  declarations         → 73
+
+State 50:
+  type_spec            → 76
+
+State 52:
+  expression           → 77
+  factor               → 63
+  sign                 → 64
+  simple_expr          → 65
+  term                 → 66
+
+State 53:
+  expression           → 78
+  factor               → 63
+  sign                 → 64
+  simple_expr          → 65
+  term                 → 66
+
+State 54:
+  expr_list            → 79
+  expression           → 80
+  factor               → 63
+  sign                 → 64
+  simple_expr          → 65
+  term                 → 66
+
+State 56:
+  factor_tail          → 82
+
+State 57:
+  factor               → 83
+  sign                 → 64
+
+State 58:
+  expression           → 84
+  factor               → 63
+  sign                 → 64
+  simple_expr          → 65
+  term                 → 66
+
+State 63:
+  mulop                → 91
+  term_prime           → 92
+
+State 64:
+  factor               → 93
+  sign                 → 64
+
+State 65:
+  expr_prime           → 100
+  relop                → 101
+
+State 66:
+  addop                → 105
+  simple_expr_prime    → 106
+
+State 69:
+  compound_stmt        → 39
+  statement            → 108
+  var_or_proc_call     → 43
+
+State 74:
+  type_spec            → 110
+
+State 80:
+  expr_list_prime      → 115
+
+State 81:
+  expr_list            → 116
+  expression           → 80
+  factor               → 63
+  sign                 → 64
+  simple_expr          → 65
+  term                 → 66
+
+State 85:
+  compound_stmt        → 39
+  statement            → 118
+  var_or_proc_call     → 43
+
+State 91:
+  factor               → 119
+  sign                 → 64
+
+State 101:
+  factor               → 63
+  sign                 → 64
+  simple_expr          → 120
+  term                 → 66
+
+State 105:
+  factor               → 63
+  sign                 → 64
+  term                 → 121
+
+State 107:
+  compound_stmt        → 39
+  statement            → 122
+  var_or_proc_call     → 43
+
+State 108:
+  stmt_list_prime      → 123
+
+State 110:
+  param_list_prime     → 126
+
+State 114:
+  expression           → 128
+  factor               → 63
+  sign                 → 64
+  simple_expr          → 65
+  term                 → 66
+
+State 118:
+  else_part            → 131
+
+State 119:
+  mulop                → 91
+  term_prime           → 132
+
+State 121:
+  addop                → 105
+  simple_expr_prime    → 133
+
+State 125:
+  id_list              → 135
+
+State 127:
+  expression           → 136
+  factor               → 63
+  sign                 → 64
+  simple_expr          → 65
+  term                 → 66
+
+State 128:
+  expr_list_prime      → 137
+
+State 130:
+  compound_stmt        → 39
+  statement            → 138
+  var_or_proc_call     → 43
+
+State 139:
+  type_spec            → 141
+
+State 140:
+  type_spec            → 142
+
+State 142:
+  param_list_prime     → 143
+
