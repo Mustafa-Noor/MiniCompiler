@@ -1,0 +1,36 @@
+FOLLOW Sets
+============================================================
+
+FOLLOW(addop               ) = { EMPTY }
+FOLLOW(arguments           ) = { COLON, SEMICOLON }
+FOLLOW(compound_stmt       ) = { DOT, SEMICOLON }
+FOLLOW(declarations        ) = { EMPTY }
+FOLLOW(else_part           ) = { SEMICOLON }
+FOLLOW(expr_list           ) = { RPAREN }
+FOLLOW(expr_list_prime     ) = { RPAREN }
+FOLLOW(expr_prime          ) = { COMMA, RBRACKET, RPAREN }
+FOLLOW(expression          ) = { COMMA, RBRACKET, RPAREN }
+FOLLOW(factor              ) = { COMMA, RBRACKET, RPAREN, addop, mulop, relop }
+FOLLOW(factor_tail         ) = { COMMA, RBRACKET, RPAREN, addop, mulop, relop }
+FOLLOW(id_list             ) = { COLON, RPAREN }
+FOLLOW(id_list_prime       ) = { COLON, RPAREN }
+FOLLOW(mulop               ) = { EMPTY }
+FOLLOW(optional_stmts      ) = { EMPTY }
+FOLLOW(param_list          ) = { RPAREN }
+FOLLOW(param_list_prime    ) = { RPAREN }
+FOLLOW(program             ) = { EOF }
+FOLLOW(relop               ) = { EMPTY }
+FOLLOW(sign                ) = { EMPTY }
+FOLLOW(simple_expr         ) = { COMMA, RBRACKET, RPAREN, relop }
+FOLLOW(simple_expr_prime   ) = { COMMA, RBRACKET, RPAREN, relop }
+FOLLOW(statement           ) = { SEMICOLON }
+FOLLOW(stmt_list           ) = { EMPTY }
+FOLLOW(stmt_list_prime     ) = { EMPTY }
+FOLLOW(subprogram_decl     ) = { SEMICOLON }
+FOLLOW(subprogram_decls    ) = { EMPTY }
+FOLLOW(subprogram_head     ) = { EMPTY }
+FOLLOW(term                ) = { COMMA, RBRACKET, RPAREN, addop, relop }
+FOLLOW(term_prime          ) = { COMMA, RBRACKET, RPAREN, addop, relop }
+FOLLOW(type_spec           ) = { RPAREN, SEMICOLON }
+FOLLOW(var_or_proc_call    ) = { EMPTY }
+FOLLOW(var_or_proc_tail    ) = { EMPTY }

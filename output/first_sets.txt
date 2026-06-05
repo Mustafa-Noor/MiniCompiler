@@ -1,0 +1,36 @@
+FIRST Sets
+============================================================
+
+FIRST(addop               ) = { MINUS, PLUS }
+FIRST(arguments           ) = { EPSILON, LPAREN }
+FIRST(compound_stmt       ) = { EMPTY }
+FIRST(declarations        ) = { EPSILON }
+FIRST(else_part           ) = { EPSILON }
+FIRST(expr_list           ) = { EPSILON, ID, LPAREN, NUMBER, sign }
+FIRST(expr_list_prime     ) = { COMMA, EPSILON }
+FIRST(expr_prime          ) = { EPSILON, relop }
+FIRST(expression          ) = { ID, LPAREN, NUMBER, sign }
+FIRST(factor              ) = { ID, LPAREN, NUMBER, sign }
+FIRST(factor_tail         ) = { EPSILON, LPAREN }
+FIRST(id_list             ) = { ID }
+FIRST(id_list_prime       ) = { COMMA, EPSILON }
+FIRST(mulop               ) = { DIVIDE, MULTIPLY }
+FIRST(optional_stmts      ) = { EPSILON, ID }
+FIRST(param_list          ) = { ID }
+FIRST(param_list_prime    ) = { EPSILON, SEMICOLON }
+FIRST(program             ) = { EMPTY }
+FIRST(relop               ) = { EQ, GE, GT, LE, LT, NEQ }
+FIRST(sign                ) = { MINUS, PLUS }
+FIRST(simple_expr         ) = { ID, LPAREN, NUMBER, sign }
+FIRST(simple_expr_prime   ) = { EPSILON, addop }
+FIRST(statement           ) = { ID }
+FIRST(stmt_list           ) = { ID }
+FIRST(stmt_list_prime     ) = { EPSILON, SEMICOLON }
+FIRST(subprogram_decl     ) = { EMPTY }
+FIRST(subprogram_decls    ) = { EPSILON }
+FIRST(subprogram_head     ) = { EMPTY }
+FIRST(term                ) = { ID, LPAREN, NUMBER, sign }
+FIRST(term_prime          ) = { EPSILON, mulop }
+FIRST(type_spec           ) = { EMPTY }
+FIRST(var_or_proc_call    ) = { ID }
+FIRST(var_or_proc_tail    ) = { ASSIGN, LBRACKET, LPAREN }
