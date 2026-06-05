@@ -1,11 +1,12 @@
-RECURSIVE DESCENT PARSER TRACE
+Recursive Descent Parser Trace
 ================================================================================
 
-File: C:\Users\musno\OneDrive\Desktop\Semesters\Semester_6\Compiler Construction Lab\FinalProject\simple_valid.pas
+File: simple_valid.pas
+--------------------------------------------------------------------------------
+
 Result: ACCEPT
 
 Derivation Trace:
---------------------------------------------------------------------------------
 → program (Found: KEYWORD_PROGRAM)
   [Match] KEYWORD_PROGRAM = program
   [Match] ID = simple

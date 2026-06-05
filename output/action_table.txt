@@ -1,0 +1,521 @@
+ACTION Table
+====================================================================================================
+
+State 1:
+  ID              → shift 3
+
+State 2:
+  $               → accept
+
+State 3:
+  LPAREN          → shift 4
+
+State 4:
+  ID              → shift 5
+
+State 5:
+  COMMA           → shift 7
+  EPSILON         → shift 8
+
+State 6:
+  RPAREN          → shift 10
+
+State 7:
+  ID              → shift 11
+
+State 8:
+  COLON           → reduce 4 (id_list_prime)
+  RPAREN          → reduce 4 (id_list_prime)
+
+State 9:
+  COLON           → reduce 2 (id_list)
+  RPAREN          → reduce 2 (id_list)
+
+State 10:
+  SEMICOLON       → shift 12
+
+State 11:
+  COMMA           → shift 7
+  EPSILON         → shift 8
+
+State 12:
+  EPSILON         → shift 14
+
+State 13:
+  COLON           → reduce 3 (id_list_prime)
+  RPAREN          → reduce 3 (id_list_prime)
+
+State 15:
+  ID              → shift 5
+
+State 16:
+  EPSILON         → shift 18
+
+State 17:
+  COLON           → shift 24
+
+State 19:
+  ID              → shift 25
+
+State 20:
+  ID              → shift 26
+
+State 21:
+  SEMICOLON       → shift 27
+
+State 23:
+  EPSILON         → shift 14
+
+State 25:
+  EPSILON         → shift 35
+  LPAREN          → shift 36
+
+State 26:
+  EPSILON         → shift 35
+  LPAREN          → shift 36
+
+State 27:
+  EPSILON         → shift 18
+
+State 28:
+  EPSILON         → shift 40
+  ID              → shift 41
+
+State 29:
+  DOT             → shift 49
+
+State 31:
+  LBRACKET        → shift 51
+
+State 32:
+  RPAREN          → reduce 7 (type_spec)
+  SEMICOLON       → reduce 7 (type_spec)
+
+State 33:
+  RPAREN          → reduce 8 (type_spec)
+  SEMICOLON       → reduce 8 (type_spec)
+
+State 34:
+  SEMICOLON       → shift 52
+
+State 35:
+  COLON           → reduce 16 (arguments)
+  SEMICOLON       → reduce 16 (arguments)
+
+State 36:
+  ID              → shift 5
+
+State 37:
+  COLON           → shift 55
+
+State 38:
+  SEMICOLON       → shift 56
+
+State 41:
+  ASSIGN          → shift 57
+  LBRACKET        → shift 58
+  LPAREN          → shift 59
+
+State 42:
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 43:
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 44:
+  SEMICOLON       → reduce 27 (statement)
+
+State 46:
+  EPSILON         → shift 74
+  SEMICOLON       → shift 75
+
+State 49:
+  EOF             → reduce 1 (program)
+
+State 50:
+  SEMICOLON       → reduce 12 (subprogram_decl)
+
+State 51:
+  NUMBER          → shift 78
+
+State 52:
+  EPSILON         → shift 14
+
+State 53:
+  COLON           → shift 80
+
+State 54:
+  RPAREN          → shift 81
+
+State 57:
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 58:
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 59:
+  EPSILON         → shift 85
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 61:
+  EPSILON         → shift 88
+  LPAREN          → shift 89
+
+State 62:
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 63:
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 65:
+  COMMA           → reduce 46 (factor)
+  RBRACKET        → reduce 46 (factor)
+  RPAREN          → reduce 46 (factor)
+  addop           → reduce 46 (factor)
+  mulop           → reduce 46 (factor)
+  relop           → reduce 46 (factor)
+
+State 68:
+  DIVIDE          → shift 94
+  EPSILON         → shift 95
+  MULTIPLY        → shift 99
+  mulop           → shift 100
+
+State 69:
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 70:
+  EPSILON         → shift 103
+  EQ              → shift 104
+  GE              → shift 105
+  GT              → shift 106
+  LE              → shift 107
+  LT              → shift 108
+  NEQ             → shift 109
+  relop           → shift 111
+
+State 71:
+  EPSILON         → shift 112
+  MINUS           → shift 114
+  PLUS            → shift 115
+  addop           → shift 116
+
+State 73:
+  DOT             → reduce 20 (compound_stmt)
+  SEMICOLON       → reduce 20 (compound_stmt)
+
+State 75:
+  ID              → shift 41
+
+State 77:
+  SEMICOLON       → reduce 26 (statement)
+
+State 78:
+  DOUBLE_DOT      → shift 120
+
+State 81:
+  COLON           → reduce 15 (arguments)
+  SEMICOLON       → reduce 15 (arguments)
+
+State 82:
+  SEMICOLON       → shift 122
+
+State 84:
+  RBRACKET        → shift 123
+
+State 85:
+  RPAREN          → reduce 53 (expr_list)
+
+State 86:
+  RPAREN          → shift 124
+
+State 87:
+  COMMA           → shift 125
+  EPSILON         → shift 126
+
+State 88:
+  COMMA           → reduce 51 (factor_tail)
+  RBRACKET        → reduce 51 (factor_tail)
+  RPAREN          → reduce 51 (factor_tail)
+  addop           → reduce 51 (factor_tail)
+  mulop           → reduce 51 (factor_tail)
+  relop           → reduce 51 (factor_tail)
+
+State 89:
+  EPSILON         → shift 85
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 90:
+  COMMA           → reduce 45 (factor)
+  RBRACKET        → reduce 45 (factor)
+  RPAREN          → reduce 45 (factor)
+  addop           → reduce 45 (factor)
+  mulop           → reduce 45 (factor)
+  relop           → reduce 45 (factor)
+
+State 91:
+  COMMA           → reduce 48 (factor)
+  RBRACKET        → reduce 48 (factor)
+  RPAREN          → reduce 48 (factor)
+  addop           → reduce 48 (factor)
+  mulop           → reduce 48 (factor)
+  relop           → reduce 48 (factor)
+
+State 92:
+  RPAREN          → shift 129
+
+State 93:
+  ID              → shift 41
+
+State 95:
+  COMMA           → reduce 44 (term_prime)
+  RBRACKET        → reduce 44 (term_prime)
+  RPAREN          → reduce 44 (term_prime)
+  addop           → reduce 44 (term_prime)
+  relop           → reduce 44 (term_prime)
+
+State 100:
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 101:
+  COMMA           → reduce 42 (term)
+  RBRACKET        → reduce 42 (term)
+  RPAREN          → reduce 42 (term)
+  addop           → reduce 42 (term)
+  relop           → reduce 42 (term)
+
+State 102:
+  COMMA           → reduce 49 (factor)
+  RBRACKET        → reduce 49 (factor)
+  RPAREN          → reduce 49 (factor)
+  addop           → reduce 49 (factor)
+  mulop           → reduce 49 (factor)
+  relop           → reduce 49 (factor)
+
+State 103:
+  COMMA           → reduce 38 (expr_prime)
+  RBRACKET        → reduce 38 (expr_prime)
+  RPAREN          → reduce 38 (expr_prime)
+
+State 110:
+  COMMA           → reduce 36 (expression)
+  RBRACKET        → reduce 36 (expression)
+  RPAREN          → reduce 36 (expression)
+
+State 111:
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 112:
+  COMMA           → reduce 41 (simple_expr_prime)
+  RBRACKET        → reduce 41 (simple_expr_prime)
+  RPAREN          → reduce 41 (simple_expr_prime)
+  relop           → reduce 41 (simple_expr_prime)
+
+State 116:
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 117:
+  COMMA           → reduce 39 (simple_expr)
+  RBRACKET        → reduce 39 (simple_expr)
+  RPAREN          → reduce 39 (simple_expr)
+  relop           → reduce 39 (simple_expr)
+
+State 118:
+  ID              → shift 41
+
+State 119:
+  EPSILON         → shift 74
+  SEMICOLON       → shift 75
+
+State 120:
+  NUMBER          → shift 136
+
+State 121:
+  EPSILON         → shift 137
+  SEMICOLON       → shift 138
+
+State 123:
+  ASSIGN          → shift 140
+
+State 125:
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 126:
+  RPAREN          → reduce 55 (expr_list_prime)
+
+State 127:
+  RPAREN          → reduce 52 (expr_list)
+
+State 128:
+  RPAREN          → shift 142
+
+State 129:
+  COMMA           → reduce 47 (factor)
+  RBRACKET        → reduce 47 (factor)
+  RPAREN          → reduce 47 (factor)
+  addop           → reduce 47 (factor)
+  mulop           → reduce 47 (factor)
+  relop           → reduce 47 (factor)
+
+State 130:
+  EPSILON         → shift 143
+
+State 131:
+  DIVIDE          → shift 94
+  EPSILON         → shift 95
+  MULTIPLY        → shift 99
+  mulop           → shift 100
+
+State 132:
+  COMMA           → reduce 37 (expr_prime)
+  RBRACKET        → reduce 37 (expr_prime)
+  RPAREN          → reduce 37 (expr_prime)
+
+State 133:
+  EPSILON         → shift 112
+  MINUS           → shift 114
+  PLUS            → shift 115
+  addop           → shift 116
+
+State 134:
+  SEMICOLON       → reduce 29 (statement)
+
+State 136:
+  RBRACKET        → shift 148
+
+State 137:
+  RPAREN          → reduce 19 (param_list_prime)
+
+State 138:
+  ID              → shift 5
+
+State 139:
+  RPAREN          → reduce 17 (param_list)
+
+State 140:
+  ID              → shift 61
+  LPAREN          → shift 63
+  MINUS           → shift 64
+  NUMBER          → shift 65
+  PLUS            → shift 66
+  sign            → shift 69
+
+State 141:
+  COMMA           → shift 125
+  EPSILON         → shift 126
+
+State 142:
+  COMMA           → reduce 50 (factor_tail)
+  RBRACKET        → reduce 50 (factor_tail)
+  RPAREN          → reduce 50 (factor_tail)
+  addop           → reduce 50 (factor_tail)
+  mulop           → reduce 50 (factor_tail)
+  relop           → reduce 50 (factor_tail)
+
+State 143:
+  SEMICOLON       → reduce 35 (else_part)
+
+State 144:
+  ID              → shift 41
+
+State 145:
+  SEMICOLON       → reduce 28 (statement)
+
+State 146:
+  COMMA           → reduce 43 (term_prime)
+  RBRACKET        → reduce 43 (term_prime)
+  RPAREN          → reduce 43 (term_prime)
+  addop           → reduce 43 (term_prime)
+  relop           → reduce 43 (term_prime)
+
+State 147:
+  COMMA           → reduce 40 (simple_expr_prime)
+  RBRACKET        → reduce 40 (simple_expr_prime)
+  RPAREN          → reduce 40 (simple_expr_prime)
+  relop           → reduce 40 (simple_expr_prime)
+
+State 149:
+  COLON           → shift 154
+
+State 151:
+  RPAREN          → reduce 54 (expr_list_prime)
+
+State 152:
+  SEMICOLON       → reduce 34 (else_part)
+
+State 155:
+  RPAREN          → reduce 9 (type_spec)
+  SEMICOLON       → reduce 9 (type_spec)
+
+State 156:
+  EPSILON         → shift 137
+  SEMICOLON       → shift 138
+
+State 157:
+  RPAREN          → reduce 18 (param_list_prime)
+

@@ -1,0 +1,17 @@
+SLR(1) Parser Trace
+================================================================================
+
+File: simple_valid.pas
+--------------------------------------------------------------------------------
+
+Result: REJECT
+
+Shift-Reduce Trace:
+SLR(1) Parser Trace
+========================================================================================================================
+Step  State Stack          Symbol Stack                             Input                          Action              
+------------------------------------------------------------------------------------------------------------------------
+Step 1: ERROR - Parse error at state 0, input KEYWORD_program
+
+Errors:
+  Syntax Error at Line 1, Column 2: Parse error at state 0, input KEYWORD_program

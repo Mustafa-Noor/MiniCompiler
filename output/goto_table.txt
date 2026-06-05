@@ -1,0 +1,292 @@
+GOTO Table
+====================================================================================================
+
+State 0:
+  KEYWORD_program      → 1
+  program              → 2
+
+State 4:
+  id_list              → 6
+
+State 5:
+  id_list_prime        → 9
+
+State 11:
+  id_list_prime        → 13
+
+State 12:
+  KEYWORD_var          → 15
+  declarations         → 16
+
+State 15:
+  id_list              → 17
+
+State 16:
+  KEYWORD_function     → 19
+  KEYWORD_procedure    → 20
+  subprogram_decl      → 21
+  subprogram_decls     → 22
+  subprogram_head      → 23
+
+State 22:
+  KEYWORD_begin        → 28
+  compound_stmt        → 29
+
+State 23:
+  KEYWORD_var          → 15
+  declarations         → 30
+
+State 24:
+  KEYWORD_array        → 31
+  KEYWORD_integer      → 32
+  KEYWORD_real         → 33
+  type_spec            → 34
+
+State 25:
+  arguments            → 37
+
+State 26:
+  arguments            → 38
+
+State 27:
+  KEYWORD_function     → 19
+  KEYWORD_procedure    → 20
+  subprogram_decl      → 21
+  subprogram_decls     → 39
+  subprogram_head      → 23
+
+State 28:
+  KEYWORD_begin        → 28
+  KEYWORD_if           → 42
+  KEYWORD_while        → 43
+  compound_stmt        → 44
+  optional_stmts       → 45
+  statement            → 46
+  stmt_list            → 47
+  var_or_proc_call     → 48
+
+State 30:
+  KEYWORD_begin        → 28
+  compound_stmt        → 50
+
+State 36:
+  id_list              → 53
+  param_list           → 54
+
+State 41:
+  var_or_proc_tail     → 60
+
+State 42:
+  KEYWORD_not          → 62
+  expression           → 67
+  factor               → 68
+  simple_expr          → 70
+  term                 → 71
+
+State 43:
+  KEYWORD_not          → 62
+  expression           → 72
+  factor               → 68
+  simple_expr          → 70
+  term                 → 71
+
+State 45:
+  KEYWORD_end          → 73
+
+State 46:
+  stmt_list_prime      → 76
+
+State 48:
+  stmt_tail            → 77
+
+State 52:
+  KEYWORD_var          → 15
+  declarations         → 79
+
+State 55:
+  KEYWORD_array        → 31
+  KEYWORD_integer      → 32
+  KEYWORD_real         → 33
+  type_spec            → 82
+
+State 57:
+  KEYWORD_not          → 62
+  expression           → 83
+  factor               → 68
+  simple_expr          → 70
+  term                 → 71
+
+State 58:
+  KEYWORD_not          → 62
+  expression           → 84
+  factor               → 68
+  simple_expr          → 70
+  term                 → 71
+
+State 59:
+  KEYWORD_not          → 62
+  expr_list            → 86
+  expression           → 87
+  factor               → 68
+  simple_expr          → 70
+  term                 → 71
+
+State 61:
+  factor_tail          → 90
+
+State 62:
+  KEYWORD_not          → 62
+  factor               → 91
+
+State 63:
+  KEYWORD_not          → 62
+  expression           → 92
+  factor               → 68
+  simple_expr          → 70
+  term                 → 71
+
+State 67:
+  KEYWORD_then         → 93
+
+State 68:
+  KEYWORD_and          → 96
+  KEYWORD_div          → 97
+  KEYWORD_mod          → 98
+  term_prime           → 101
+
+State 69:
+  KEYWORD_not          → 62
+  factor               → 102
+
+State 70:
+  expr_prime           → 110
+
+State 71:
+  KEYWORD_or           → 113
+  simple_expr_prime    → 117
+
+State 72:
+  KEYWORD_do           → 118
+
+State 75:
+  KEYWORD_begin        → 28
+  KEYWORD_if           → 42
+  KEYWORD_while        → 43
+  compound_stmt        → 44
+  statement            → 119
+  var_or_proc_call     → 48
+
+State 80:
+  KEYWORD_array        → 31
+  KEYWORD_integer      → 32
+  KEYWORD_real         → 33
+  type_spec            → 121
+
+State 87:
+  expr_list_prime      → 127
+
+State 89:
+  KEYWORD_not          → 62
+  expr_list            → 128
+  expression           → 87
+  factor               → 68
+  simple_expr          → 70
+  term                 → 71
+
+State 93:
+  KEYWORD_begin        → 28
+  KEYWORD_if           → 42
+  KEYWORD_while        → 43
+  compound_stmt        → 44
+  statement            → 130
+  var_or_proc_call     → 48
+
+State 100:
+  KEYWORD_not          → 62
+  factor               → 131
+
+State 111:
+  KEYWORD_not          → 62
+  factor               → 68
+  simple_expr          → 132
+  term                 → 71
+
+State 116:
+  KEYWORD_not          → 62
+  factor               → 68
+  term                 → 133
+
+State 118:
+  KEYWORD_begin        → 28
+  KEYWORD_if           → 42
+  KEYWORD_while        → 43
+  compound_stmt        → 44
+  statement            → 134
+  var_or_proc_call     → 48
+
+State 119:
+  stmt_list_prime      → 135
+
+State 121:
+  param_list_prime     → 139
+
+State 125:
+  KEYWORD_not          → 62
+  expression           → 141
+  factor               → 68
+  simple_expr          → 70
+  term                 → 71
+
+State 130:
+  KEYWORD_else         → 144
+  else_part            → 145
+
+State 131:
+  KEYWORD_and          → 96
+  KEYWORD_div          → 97
+  KEYWORD_mod          → 98
+  term_prime           → 146
+
+State 133:
+  KEYWORD_or           → 113
+  simple_expr_prime    → 147
+
+State 138:
+  id_list              → 149
+
+State 140:
+  KEYWORD_not          → 62
+  expression           → 150
+  factor               → 68
+  simple_expr          → 70
+  term                 → 71
+
+State 141:
+  expr_list_prime      → 151
+
+State 144:
+  KEYWORD_begin        → 28
+  KEYWORD_if           → 42
+  KEYWORD_while        → 43
+  compound_stmt        → 44
+  statement            → 152
+  var_or_proc_call     → 48
+
+State 148:
+  KEYWORD_of           → 153
+
+State 153:
+  KEYWORD_array        → 31
+  KEYWORD_integer      → 32
+  KEYWORD_real         → 33
+  type_spec            → 155
+
+State 154:
+  KEYWORD_array        → 31
+  KEYWORD_integer      → 32
+  KEYWORD_real         → 33
+  type_spec            → 156
+
+State 156:
+  param_list_prime     → 157
+
