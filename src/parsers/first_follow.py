@@ -44,7 +44,15 @@ class GrammarAnalyzer:
     
     def _is_terminal(self, symbol: str) -> bool:
         """Check if a symbol is a terminal"""
-        return symbol in self.TERMINALS or symbol.isupper()
+        if symbol == 'EPSILON':
+            return True
+        if symbol in self.grammar:
+            return False
+        return (
+            symbol in self.TERMINALS
+            or symbol.isupper()
+            or symbol.startswith('KEYWORD_')
+        )
     
     def _compute_first_sets(self):
         """Compute FIRST sets for all non-terminals"""
@@ -296,6 +304,11 @@ def create_ll1_grammar() -> Dict[str, List[List[str]]]:
             ['LBRACKET', 'expression', 'RBRACKET', 'ASSIGN', 'expression'],
             ['ASSIGN', 'expression'],
             ['LPAREN', 'expr_list', 'RPAREN']
+        ],
+        
+        # Empty tail after variable assignment or procedure call
+        'stmt_tail': [
+            ['EPSILON']
         ],
         
         # Optional else part

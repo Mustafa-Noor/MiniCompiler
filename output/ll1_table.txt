@@ -1,48 +1,96 @@
 LL(1) Parsing Table (Detailed)
 ====================================================================================================
 
+M[addop          , KEYWORD_or] -> KEYWORD_or
 M[addop          , MINUS     ] -> MINUS
 M[addop          , PLUS      ] -> PLUS
 M[arguments      , COLON     ] -> EPSILON
 M[arguments      , LPAREN    ] -> LPAREN param_list RPAREN
 M[arguments      , SEMICOLON ] -> EPSILON
+M[compound_stmt  , KEYWORD_begin] -> KEYWORD_begin optional_stmts KEYWORD_end
+M[declarations   , KEYWORD_begin] -> EPSILON
+M[declarations   , KEYWORD_function] -> EPSILON
+M[declarations   , KEYWORD_procedure] -> EPSILON
+M[declarations   , KEYWORD_var] -> KEYWORD_var id_list COLON type_spec SEMICOLON declarations
+M[else_part      , KEYWORD_else] -> EPSILON
+M[else_part      , KEYWORD_end] -> EPSILON
 M[else_part      , SEMICOLON ] -> EPSILON
 M[expr_list      , ID        ] -> expression expr_list_prime
+M[expr_list      , KEYWORD_not] -> expression expr_list_prime
 M[expr_list      , LPAREN    ] -> expression expr_list_prime
+M[expr_list      , MINUS     ] -> expression expr_list_prime
 M[expr_list      , NUMBER    ] -> expression expr_list_prime
+M[expr_list      , PLUS      ] -> expression expr_list_prime
 M[expr_list      , RPAREN    ] -> EPSILON
-M[expr_list      , sign      ] -> expression expr_list_prime
 M[expr_list_prime, COMMA     ] -> COMMA expression expr_list_prime
 M[expr_list_prime, RPAREN    ] -> EPSILON
 M[expr_prime     , COMMA     ] -> EPSILON
+M[expr_prime     , EQ        ] -> relop simple_expr
+M[expr_prime     , GE        ] -> relop simple_expr
+M[expr_prime     , GT        ] -> relop simple_expr
+M[expr_prime     , KEYWORD_do] -> EPSILON
+M[expr_prime     , KEYWORD_else] -> EPSILON
+M[expr_prime     , KEYWORD_end] -> EPSILON
+M[expr_prime     , KEYWORD_then] -> EPSILON
+M[expr_prime     , LE        ] -> relop simple_expr
+M[expr_prime     , LT        ] -> relop simple_expr
+M[expr_prime     , NEQ       ] -> relop simple_expr
 M[expr_prime     , RBRACKET  ] -> EPSILON
 M[expr_prime     , RPAREN    ] -> EPSILON
-M[expr_prime     , relop     ] -> relop simple_expr
+M[expr_prime     , SEMICOLON ] -> EPSILON
 M[expression     , ID        ] -> simple_expr expr_prime
+M[expression     , KEYWORD_not] -> simple_expr expr_prime
 M[expression     , LPAREN    ] -> simple_expr expr_prime
+M[expression     , MINUS     ] -> simple_expr expr_prime
 M[expression     , NUMBER    ] -> simple_expr expr_prime
-M[expression     , sign      ] -> simple_expr expr_prime
+M[expression     , PLUS      ] -> simple_expr expr_prime
 M[factor         , ID        ] -> ID factor_tail
+M[factor         , KEYWORD_not] -> KEYWORD_not factor
 M[factor         , LPAREN    ] -> LPAREN expression RPAREN
+M[factor         , MINUS     ] -> sign factor
 M[factor         , NUMBER    ] -> NUMBER
-M[factor         , sign      ] -> sign factor
+M[factor         , PLUS      ] -> sign factor
 M[factor_tail    , COMMA     ] -> EPSILON
+M[factor_tail    , DIVIDE    ] -> EPSILON
+M[factor_tail    , EQ        ] -> EPSILON
+M[factor_tail    , GE        ] -> EPSILON
+M[factor_tail    , GT        ] -> EPSILON
+M[factor_tail    , KEYWORD_and] -> EPSILON
+M[factor_tail    , KEYWORD_div] -> EPSILON
+M[factor_tail    , KEYWORD_do] -> EPSILON
+M[factor_tail    , KEYWORD_else] -> EPSILON
+M[factor_tail    , KEYWORD_end] -> EPSILON
+M[factor_tail    , KEYWORD_mod] -> EPSILON
+M[factor_tail    , KEYWORD_or] -> EPSILON
+M[factor_tail    , KEYWORD_then] -> EPSILON
+M[factor_tail    , LE        ] -> EPSILON
 M[factor_tail    , LPAREN    ] -> LPAREN expr_list RPAREN
+M[factor_tail    , LT        ] -> EPSILON
+M[factor_tail    , MINUS     ] -> EPSILON
+M[factor_tail    , MULTIPLY  ] -> EPSILON
+M[factor_tail    , NEQ       ] -> EPSILON
+M[factor_tail    , PLUS      ] -> EPSILON
 M[factor_tail    , RBRACKET  ] -> EPSILON
 M[factor_tail    , RPAREN    ] -> EPSILON
-M[factor_tail    , addop     ] -> EPSILON
-M[factor_tail    , mulop     ] -> EPSILON
-M[factor_tail    , relop     ] -> EPSILON
+M[factor_tail    , SEMICOLON ] -> EPSILON
 M[id_list        , ID        ] -> ID id_list_prime
 M[id_list_prime  , COLON     ] -> EPSILON
 M[id_list_prime  , COMMA     ] -> COMMA ID id_list_prime
 M[id_list_prime  , RPAREN    ] -> EPSILON
 M[mulop          , DIVIDE    ] -> DIVIDE
+M[mulop          , KEYWORD_and] -> KEYWORD_and
+M[mulop          , KEYWORD_div] -> KEYWORD_div
+M[mulop          , KEYWORD_mod] -> KEYWORD_mod
 M[mulop          , MULTIPLY  ] -> MULTIPLY
 M[optional_stmts , ID        ] -> stmt_list
+M[optional_stmts , KEYWORD_begin] -> stmt_list
+M[optional_stmts , KEYWORD_end] -> EPSILON
+M[optional_stmts , KEYWORD_if] -> stmt_list
+M[optional_stmts , KEYWORD_while] -> stmt_list
 M[param_list     , ID        ] -> id_list COLON type_spec param_list_prime
 M[param_list_prime, RPAREN    ] -> EPSILON
 M[param_list_prime, SEMICOLON ] -> SEMICOLON id_list COLON type_spec param_list_prime
+M[program        , KEYWORD_program] -> KEYWORD_program ID LPAREN id_list RPAREN SEMICOLON declarations subprogram_decls compound_stmt DOT
 M[relop          , EQ        ] -> EQ
 M[relop          , GE        ] -> GE
 M[relop          , GT        ] -> GT
@@ -52,27 +100,79 @@ M[relop          , NEQ       ] -> NEQ
 M[sign           , MINUS     ] -> MINUS
 M[sign           , PLUS      ] -> PLUS
 M[simple_expr    , ID        ] -> term simple_expr_prime
+M[simple_expr    , KEYWORD_not] -> term simple_expr_prime
 M[simple_expr    , LPAREN    ] -> term simple_expr_prime
+M[simple_expr    , MINUS     ] -> term simple_expr_prime
 M[simple_expr    , NUMBER    ] -> term simple_expr_prime
-M[simple_expr    , sign      ] -> term simple_expr_prime
+M[simple_expr    , PLUS      ] -> term simple_expr_prime
 M[simple_expr_prime, COMMA     ] -> EPSILON
+M[simple_expr_prime, EQ        ] -> EPSILON
+M[simple_expr_prime, GE        ] -> EPSILON
+M[simple_expr_prime, GT        ] -> EPSILON
+M[simple_expr_prime, KEYWORD_do] -> EPSILON
+M[simple_expr_prime, KEYWORD_else] -> EPSILON
+M[simple_expr_prime, KEYWORD_end] -> EPSILON
+M[simple_expr_prime, KEYWORD_or] -> addop term simple_expr_prime
+M[simple_expr_prime, KEYWORD_then] -> EPSILON
+M[simple_expr_prime, LE        ] -> EPSILON
+M[simple_expr_prime, LT        ] -> EPSILON
+M[simple_expr_prime, MINUS     ] -> addop term simple_expr_prime
+M[simple_expr_prime, NEQ       ] -> EPSILON
+M[simple_expr_prime, PLUS      ] -> addop term simple_expr_prime
 M[simple_expr_prime, RBRACKET  ] -> EPSILON
 M[simple_expr_prime, RPAREN    ] -> EPSILON
-M[simple_expr_prime, addop     ] -> addop term simple_expr_prime
-M[simple_expr_prime, relop     ] -> EPSILON
+M[simple_expr_prime, SEMICOLON ] -> EPSILON
 M[statement      , ID        ] -> var_or_proc_call stmt_tail
+M[statement      , KEYWORD_begin] -> compound_stmt
+M[statement      , KEYWORD_if] -> KEYWORD_if expression KEYWORD_then statement else_part
+M[statement      , KEYWORD_while] -> KEYWORD_while expression KEYWORD_do statement
 M[stmt_list      , ID        ] -> statement stmt_list_prime
+M[stmt_list      , KEYWORD_begin] -> statement stmt_list_prime
+M[stmt_list      , KEYWORD_if] -> statement stmt_list_prime
+M[stmt_list      , KEYWORD_while] -> statement stmt_list_prime
+M[stmt_list_prime, KEYWORD_end] -> EPSILON
 M[stmt_list_prime, SEMICOLON ] -> SEMICOLON statement stmt_list_prime
+M[stmt_tail      , KEYWORD_else] -> EPSILON
+M[stmt_tail      , KEYWORD_end] -> EPSILON
+M[stmt_tail      , SEMICOLON ] -> EPSILON
+M[subprogram_decl, KEYWORD_function] -> subprogram_head declarations compound_stmt
+M[subprogram_decl, KEYWORD_procedure] -> subprogram_head declarations compound_stmt
+M[subprogram_decls, KEYWORD_begin] -> EPSILON
+M[subprogram_decls, KEYWORD_function] -> subprogram_decl SEMICOLON subprogram_decls
+M[subprogram_decls, KEYWORD_procedure] -> subprogram_decl SEMICOLON subprogram_decls
+M[subprogram_head, KEYWORD_function] -> KEYWORD_function ID arguments COLON type_spec SEMICOLON
+M[subprogram_head, KEYWORD_procedure] -> KEYWORD_procedure ID arguments SEMICOLON
 M[term           , ID        ] -> factor term_prime
+M[term           , KEYWORD_not] -> factor term_prime
 M[term           , LPAREN    ] -> factor term_prime
+M[term           , MINUS     ] -> factor term_prime
 M[term           , NUMBER    ] -> factor term_prime
-M[term           , sign      ] -> factor term_prime
+M[term           , PLUS      ] -> factor term_prime
 M[term_prime     , COMMA     ] -> EPSILON
+M[term_prime     , DIVIDE    ] -> mulop factor term_prime
+M[term_prime     , EQ        ] -> EPSILON
+M[term_prime     , GE        ] -> EPSILON
+M[term_prime     , GT        ] -> EPSILON
+M[term_prime     , KEYWORD_and] -> mulop factor term_prime
+M[term_prime     , KEYWORD_div] -> mulop factor term_prime
+M[term_prime     , KEYWORD_do] -> EPSILON
+M[term_prime     , KEYWORD_else] -> EPSILON
+M[term_prime     , KEYWORD_end] -> EPSILON
+M[term_prime     , KEYWORD_mod] -> mulop factor term_prime
+M[term_prime     , KEYWORD_or] -> EPSILON
+M[term_prime     , KEYWORD_then] -> EPSILON
+M[term_prime     , LE        ] -> EPSILON
+M[term_prime     , LT        ] -> EPSILON
+M[term_prime     , MINUS     ] -> EPSILON
+M[term_prime     , MULTIPLY  ] -> mulop factor term_prime
+M[term_prime     , NEQ       ] -> EPSILON
+M[term_prime     , PLUS      ] -> EPSILON
 M[term_prime     , RBRACKET  ] -> EPSILON
 M[term_prime     , RPAREN    ] -> EPSILON
-M[term_prime     , addop     ] -> EPSILON
-M[term_prime     , mulop     ] -> mulop factor term_prime
-M[term_prime     , relop     ] -> EPSILON
+M[term_prime     , SEMICOLON ] -> EPSILON
+M[type_spec      , KEYWORD_array] -> KEYWORD_array LBRACKET NUMBER DOUBLE_DOT NUMBER RBRACKET KEYWORD_of type_spec
+M[type_spec      , KEYWORD_integer] -> KEYWORD_integer
+M[type_spec      , KEYWORD_real] -> KEYWORD_real
 M[var_or_proc_call, ID        ] -> ID var_or_proc_tail
 M[var_or_proc_tail, ASSIGN    ] -> ASSIGN expression
 M[var_or_proc_tail, LBRACKET  ] -> LBRACKET expression RBRACKET ASSIGN expression

@@ -203,10 +203,14 @@ def generate_slr_trace(output_dir: str) -> None:
         
         output += "Result: " + ("ACCEPT" if success else "REJECT") + "\n\n"
         output += "Shift-Reduce Trace:\n"
-        output += trace[:2000] + "\n"  # First 2000 chars
-        
-        if len(trace) > 2000:
-            output += f"\n... (trace truncated) ...\n"
+        trace_lines = trace.splitlines()
+        max_lines = 100
+        if len(trace_lines) <= max_lines:
+            output += trace + "\n"
+        else:
+            output += "\n".join(trace_lines[:max_lines]) + "\n"
+            output += f"\n... ({len(trace_lines) - max_lines} more lines) ...\n"
+            output += "\n".join(trace_lines[-5:]) + "\n"
         
         if errors:
             output += "\nErrors:\n"

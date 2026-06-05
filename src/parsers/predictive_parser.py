@@ -131,11 +131,16 @@ class PredictiveParser:
     def _token_to_symbol(self, token: Token) -> str:
         """Convert token to grammar symbol"""
         token_type = token.token_type
-        
+
         if token_type == 'KEYWORD':
             lexeme_lower = token.lexeme.lower()
-            return self.TOKEN_TO_SYMBOL['KEYWORD'].get(lexeme_lower, 'KEYWORD_' + lexeme_lower)
-        
+            return self.TOKEN_TO_SYMBOL['KEYWORD'].get(
+                lexeme_lower, 'KEYWORD_' + lexeme_lower)
+
+        if isinstance(token_type, str) and token_type.startswith('KEYWORD_'):
+            keyword = token_type[len('KEYWORD_'):].lower()
+            return f'KEYWORD_{keyword}'
+
         return self.TOKEN_TO_SYMBOL.get(token_type, token_type)
     
     def _log_step(self, step_num: int, stack_top: Optional[str], action: str):

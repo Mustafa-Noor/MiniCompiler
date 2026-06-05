@@ -3,39 +3,40 @@ FIRST Sets
 
 FIRST(X) = {terminals that can appear first in any derivation from X}
 
-FIRST(addop               ) = {'addop'}
+FIRST(addop               ) = {'KEYWORD_or', 'MINUS', 'PLUS'}
 FIRST(arguments           ) = {'LPAREN', 'EPSILON'}
-FIRST(compound_stmt       ) = set()
-FIRST(declarations        ) = {'EPSILON'}
-FIRST(else_part           ) = {'EPSILON'}
-FIRST(expr_list           ) = {'LPAREN', 'sign', 'EPSILON', 'NUMBER', 'ID'}
-FIRST(expr_list_prime     ) = {'COMMA', 'EPSILON'}
-FIRST(expr_prime          ) = {'EPSILON', 'relop'}
-FIRST(expression          ) = {'LPAREN', 'sign', 'NUMBER', 'ID'}
-FIRST(factor              ) = {'NUMBER', 'LPAREN', 'sign', 'ID'}
+FIRST(compound_stmt       ) = {'KEYWORD_begin'}
+FIRST(declarations        ) = {'KEYWORD_var', 'EPSILON'}
+FIRST(else_part           ) = {'EPSILON', 'KEYWORD_else'}
+FIRST(expr_list           ) = {'KEYWORD_not', 'MINUS', 'NUMBER', 'ID', 'LPAREN', 'EPSILON', 'PLUS'}
+FIRST(expr_list_prime     ) = {'EPSILON', 'COMMA'}
+FIRST(expr_prime          ) = {'LE', 'EQ', 'GT', 'GE', 'LT', 'EPSILON', 'NEQ'}
+FIRST(expression          ) = {'KEYWORD_not', 'MINUS', 'NUMBER', 'ID', 'LPAREN', 'PLUS'}
+FIRST(factor              ) = {'NUMBER', 'ID', 'KEYWORD_not', 'MINUS', 'LPAREN', 'PLUS'}
 FIRST(factor_tail         ) = {'LPAREN', 'EPSILON'}
 FIRST(id_list             ) = {'ID'}
-FIRST(id_list_prime       ) = {'COMMA', 'EPSILON'}
-FIRST(mulop               ) = {'mulop'}
-FIRST(optional_stmts      ) = {'EPSILON', 'ID'}
+FIRST(id_list_prime       ) = {'EPSILON', 'COMMA'}
+FIRST(mulop               ) = {'DIVIDE', 'KEYWORD_div', 'KEYWORD_and', 'KEYWORD_mod', 'MULTIPLY'}
+FIRST(optional_stmts      ) = {'KEYWORD_if', 'ID', 'KEYWORD_begin', 'KEYWORD_while', 'EPSILON'}
 FIRST(param_list          ) = {'ID'}
 FIRST(param_list_prime    ) = {'EPSILON', 'SEMICOLON'}
-FIRST(program             ) = {'program'}
-FIRST(relop               ) = {'relop'}
-FIRST(sign                ) = {'sign'}
-FIRST(simple_expr         ) = {'LPAREN', 'sign', 'NUMBER', 'ID'}
-FIRST(simple_expr_prime   ) = {'EPSILON', 'addop'}
-FIRST(statement           ) = {'ID'}
-FIRST(stmt_list           ) = {'ID'}
+FIRST(program             ) = {'KEYWORD_program'}
+FIRST(relop               ) = {'LE', 'EQ', 'GT', 'GE', 'LT', 'NEQ'}
+FIRST(sign                ) = {'MINUS', 'PLUS'}
+FIRST(simple_expr         ) = {'KEYWORD_not', 'MINUS', 'NUMBER', 'ID', 'LPAREN', 'PLUS'}
+FIRST(simple_expr_prime   ) = {'MINUS', 'KEYWORD_or', 'EPSILON', 'PLUS'}
+FIRST(statement           ) = {'KEYWORD_if', 'ID', 'KEYWORD_begin', 'KEYWORD_while'}
+FIRST(stmt_list           ) = {'KEYWORD_if', 'ID', 'KEYWORD_begin', 'KEYWORD_while'}
 FIRST(stmt_list_prime     ) = {'EPSILON', 'SEMICOLON'}
-FIRST(subprogram_decl     ) = set()
-FIRST(subprogram_decls    ) = {'EPSILON'}
-FIRST(subprogram_head     ) = set()
-FIRST(term                ) = {'LPAREN', 'sign', 'NUMBER', 'ID'}
-FIRST(term_prime          ) = {'EPSILON', 'mulop'}
-FIRST(type_spec           ) = set()
+FIRST(stmt_tail           ) = {'EPSILON'}
+FIRST(subprogram_decl     ) = {'KEYWORD_procedure', 'KEYWORD_function'}
+FIRST(subprogram_decls    ) = {'KEYWORD_procedure', 'EPSILON', 'KEYWORD_function'}
+FIRST(subprogram_head     ) = {'KEYWORD_procedure', 'KEYWORD_function'}
+FIRST(term                ) = {'KEYWORD_not', 'MINUS', 'NUMBER', 'ID', 'LPAREN', 'PLUS'}
+FIRST(term_prime          ) = {'DIVIDE', 'KEYWORD_div', 'KEYWORD_and', 'KEYWORD_mod', 'EPSILON', 'MULTIPLY'}
+FIRST(type_spec           ) = {'KEYWORD_array', 'KEYWORD_real', 'KEYWORD_integer'}
 FIRST(var_or_proc_call    ) = {'ID'}
-FIRST(var_or_proc_tail    ) = {'LPAREN', 'ASSIGN', 'LBRACKET'}
+FIRST(var_or_proc_tail    ) = {'LBRACKET', 'LPAREN', 'ASSIGN'}
 
 ================================================================================
-Total non-terminals: 33
+Total non-terminals: 34

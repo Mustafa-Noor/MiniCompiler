@@ -11,4 +11,5 @@ LL(1) Predictive Parser Trace
 ======================================================================================================================================================
 Step  Stack                                                Input                                      Action                                            
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-Step   1: [EOF                                               ] [program simple ( input , output ) ; var x : integer ; begin read ( x ) ; write ( x ) end . EOF] ERROR: No production for [program, KEYWORD_PROGRAM]
+Step   1: [KEYWORD_program ID LPAREN id_list RPAREN SEMICOLON declarations subprogram_decls compound_stmt DOT EOF] [program simple ( input , output ) ; var x : integer ; begin read ( x ) ; write ( x ) end . EOF] EXPAND program → KEYWORD_program ID LPAREN id_list RPAREN SEMICOLON declarations subprogram_decls compound_stmt DOT
+Step   2: [ID LPAREN id_list RPAREN SEMICOLON declarations subprogram_decls compound_stmt DOT EOF] [program simple ( input , output ) ; var x : integer ; begin read ( x ) ; write ( x ) end . EOF] ERROR: No production for [KEYWORD_program, KEYWORD_program]

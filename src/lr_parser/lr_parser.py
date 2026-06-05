@@ -120,6 +120,9 @@ class LRItemSet:
         For each item [A → α • B β]:
         - Add all items [B → • γ] for each production B → γ
         
+        Epsilon productions are advanced in-place so reduce items appear
+        without requiring a shift on the EPSILON pseudo-terminal.
+        
         Args:
             grammar: Grammar dictionary
             
@@ -133,12 +136,21 @@ class LRItemSet:
             added = False
             new_items = set()
             
+            for item in list(closure_set.items):
+                current = item
+                while current.get_next_symbol() == 'EPSILON':
+                    current = current.advance()
+                if current != item and current not in closure_set.items:
+                    new_items.add(current)
+                    added = True
+            
+            closure_set.add_items(new_items)
+            new_items = set()
+            
             for item in closure_set.items:
                 next_sym = item.get_next_symbol()
                 
-                # If symbol after dot is non-terminal
-                if next_sym and next_sym in grammar:
-                    # Add all productions for that non-terminal
+                if next_sym and next_sym != 'EPSILON' and next_sym in grammar:
                     for production in grammar[next_sym]:
                         new_item = LRItem((next_sym, production), 0)
                         if new_item not in closure_set.items:
@@ -242,7 +254,7 @@ class SLRParser:
             symbols = set()
             for item in current_set.items:
                 next_sym = item.get_next_symbol()
-                if next_sym:
+                if next_sym and next_sym != 'EPSILON':
                     symbols.add(next_sym)
             
             # Compute GOTO for each symbol
@@ -268,7 +280,7 @@ class SLRParser:
                     # Reduce item
                     if item.non_terminal == f"{list(self.grammar.keys())[0]}'":
                         # Accept item
-                        self.action_table[(state_id, '$')] = ('accept', -1)
+                        self.action_table[(state_id, 'EOF')] = ('accept', -1)
                     else:
                         # Find production number
                         prod_num = self._find_production_number(
@@ -299,12 +311,12 @@ class SLRParser:
                         self.goto_table[(state_id, next_sym)] = next_state
     
     def _get_terminals(self) -> Set[str]:
-        """Get set of all terminals in grammar"""
+        """Get set of all terminals in grammar (excluding EPSILON)"""
         terminals = set()
         for non_terminal, prods in self.grammar.items():
             for prod in prods:
                 for sym in prod:
-                    if self.analyzer._is_terminal(sym):
+                    if sym != 'EPSILON' and self.analyzer._is_terminal(sym):
                         terminals.add(sym)
         return terminals
     
@@ -380,8 +392,9 @@ class SLRParser:
                 trace.append(f"Step {step:<5} {state_str:<20} {symbol_str:<40} "
                            f"{input_str:<30} REDUCE {nt} -> ...")
                 
-                # Pop symbols
-                for _ in symbols:
+                # Epsilon productions have nothing to pop
+                pop_count = 0 if symbols == ['EPSILON'] else len(symbols)
+                for _ in range(pop_count):
                     if state_stack:
                         state_stack.pop()
                     if symbol_stack:
@@ -404,25 +417,43 @@ class SLRParser:
     def _token_to_symbol(self, token: Token) -> str:
         """Convert token to grammar symbol"""
         if token.token_type == TokenType.EOF:
-            return '$'
-        
-        # Map token types to grammar symbols
+            return 'EOF'
+
+        token_type = token.token_type
+
+        # Scanner emits KEYWORD_PROGRAM, KEYWORD_var, etc.
+        if isinstance(token_type, str) and token_type.startswith('KEYWORD_'):
+            keyword = token_type[len('KEYWORD_'):].lower()
+            return f'KEYWORD_{keyword}'
+
         token_map = {
-            'KEYWORD_PROGRAM': 'KEYWORD_program',
-            'KEYWORD_VAR': 'KEYWORD_var',
             'ID': 'ID',
             'NUMBER': 'NUMBER',
             'LPAREN': 'LPAREN',
             'RPAREN': 'RPAREN',
+            'LBRACKET': 'LBRACKET',
+            'RBRACKET': 'RBRACKET',
             'SEMICOLON': 'SEMICOLON',
+            'COLON': 'COLON',
+            'COMMA': 'COMMA',
+            'DOT': 'DOT',
+            'DOUBLE_DOT': 'DOUBLE_DOT',
             'ASSIGN': 'ASSIGN',
             'PLUS': 'PLUS',
             'MINUS': 'MINUS',
             'MULTIPLY': 'MULTIPLY',
             'DIVIDE': 'DIVIDE',
+            'MOD': 'mulop',
+            'INT_DIV': 'mulop',
+            'EQ': 'relop',
+            'NEQ': 'relop',
+            'LT': 'relop',
+            'LE': 'relop',
+            'GT': 'relop',
+            'GE': 'relop',
         }
-        
-        return token_map.get(token.token_type, token.token_type)
+
+        return token_map.get(token_type, token_type)
     
     def print_action_table(self) -> str:
         """Generate formatted ACTION table"""

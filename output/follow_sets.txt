@@ -3,39 +3,40 @@ FOLLOW Sets
 
 FOLLOW(X) = {terminals that can appear after X in any derivation}
 
-FOLLOW(addop               ) = set()
-FOLLOW(arguments           ) = {'COLON', 'SEMICOLON'}
-FOLLOW(compound_stmt       ) = {'SEMICOLON', 'DOT'}
-FOLLOW(declarations        ) = set()
-FOLLOW(else_part           ) = {'SEMICOLON'}
+FOLLOW(addop               ) = {'KEYWORD_not', 'MINUS', 'NUMBER', 'ID', 'LPAREN', 'PLUS'}
+FOLLOW(arguments           ) = {'SEMICOLON', 'COLON'}
+FOLLOW(compound_stmt       ) = {'DOT', 'KEYWORD_else', 'SEMICOLON', 'KEYWORD_end'}
+FOLLOW(declarations        ) = {'KEYWORD_procedure', 'KEYWORD_begin', 'KEYWORD_function'}
+FOLLOW(else_part           ) = {'KEYWORD_else', 'SEMICOLON', 'KEYWORD_end'}
 FOLLOW(expr_list           ) = {'RPAREN'}
 FOLLOW(expr_list_prime     ) = {'RPAREN'}
-FOLLOW(expr_prime          ) = {'RBRACKET', 'COMMA', 'RPAREN'}
-FOLLOW(expression          ) = {'RBRACKET', 'RPAREN', 'COMMA'}
-FOLLOW(factor              ) = {'addop', 'relop', 'RBRACKET', 'COMMA', 'RPAREN', 'mulop'}
-FOLLOW(factor_tail         ) = {'addop', 'relop', 'RBRACKET', 'COMMA', 'RPAREN', 'mulop'}
-FOLLOW(id_list             ) = {'COLON', 'RPAREN'}
-FOLLOW(id_list_prime       ) = {'COLON', 'RPAREN'}
-FOLLOW(mulop               ) = set()
-FOLLOW(optional_stmts      ) = set()
+FOLLOW(expr_prime          ) = {'RBRACKET', 'KEYWORD_then', 'KEYWORD_else', 'SEMICOLON', 'RPAREN', 'KEYWORD_do', 'KEYWORD_end', 'COMMA'}
+FOLLOW(expression          ) = {'RBRACKET', 'KEYWORD_then', 'KEYWORD_else', 'SEMICOLON', 'RPAREN', 'KEYWORD_do', 'KEYWORD_end', 'COMMA'}
+FOLLOW(factor              ) = {'LE', 'KEYWORD_then', 'DIVIDE', 'GE', 'COMMA', 'SEMICOLON', 'KEYWORD_and', 'RPAREN', 'RBRACKET', 'EQ', 'GT', 'KEYWORD_do', 'MULTIPLY', 'NEQ', 'PLUS', 'MINUS', 'KEYWORD_else', 'KEYWORD_or', 'KEYWORD_div', 'KEYWORD_mod', 'KEYWORD_end', 'LT'}
+FOLLOW(factor_tail         ) = {'LE', 'KEYWORD_then', 'DIVIDE', 'GE', 'COMMA', 'SEMICOLON', 'KEYWORD_and', 'RPAREN', 'RBRACKET', 'EQ', 'GT', 'KEYWORD_do', 'MULTIPLY', 'NEQ', 'PLUS', 'MINUS', 'KEYWORD_else', 'KEYWORD_or', 'KEYWORD_div', 'KEYWORD_mod', 'KEYWORD_end', 'LT'}
+FOLLOW(id_list             ) = {'RPAREN', 'COLON'}
+FOLLOW(id_list_prime       ) = {'RPAREN', 'COLON'}
+FOLLOW(mulop               ) = {'KEYWORD_not', 'MINUS', 'NUMBER', 'ID', 'LPAREN', 'PLUS'}
+FOLLOW(optional_stmts      ) = {'KEYWORD_end'}
 FOLLOW(param_list          ) = {'RPAREN'}
 FOLLOW(param_list_prime    ) = {'RPAREN'}
 FOLLOW(program             ) = {'EOF'}
-FOLLOW(relop               ) = set()
-FOLLOW(sign                ) = set()
-FOLLOW(simple_expr         ) = {'RBRACKET', 'COMMA', 'RPAREN', 'relop'}
-FOLLOW(simple_expr_prime   ) = {'RBRACKET', 'COMMA', 'RPAREN', 'relop'}
-FOLLOW(statement           ) = {'SEMICOLON'}
-FOLLOW(stmt_list           ) = set()
-FOLLOW(stmt_list_prime     ) = set()
+FOLLOW(relop               ) = {'KEYWORD_not', 'MINUS', 'NUMBER', 'ID', 'LPAREN', 'PLUS'}
+FOLLOW(sign                ) = {'KEYWORD_not', 'MINUS', 'NUMBER', 'ID', 'LPAREN', 'PLUS'}
+FOLLOW(simple_expr         ) = {'LE', 'RBRACKET', 'KEYWORD_then', 'EQ', 'GT', 'KEYWORD_do', 'GE', 'NEQ', 'COMMA', 'KEYWORD_else', 'SEMICOLON', 'RPAREN', 'KEYWORD_end', 'LT'}
+FOLLOW(simple_expr_prime   ) = {'LE', 'RBRACKET', 'KEYWORD_then', 'EQ', 'GT', 'KEYWORD_do', 'GE', 'NEQ', 'COMMA', 'KEYWORD_else', 'SEMICOLON', 'RPAREN', 'KEYWORD_end', 'LT'}
+FOLLOW(statement           ) = {'KEYWORD_else', 'SEMICOLON', 'KEYWORD_end'}
+FOLLOW(stmt_list           ) = {'KEYWORD_end'}
+FOLLOW(stmt_list_prime     ) = {'KEYWORD_end'}
+FOLLOW(stmt_tail           ) = {'KEYWORD_else', 'SEMICOLON', 'KEYWORD_end'}
 FOLLOW(subprogram_decl     ) = {'SEMICOLON'}
-FOLLOW(subprogram_decls    ) = set()
-FOLLOW(subprogram_head     ) = set()
-FOLLOW(term                ) = {'addop', 'relop', 'RBRACKET', 'COMMA', 'RPAREN'}
-FOLLOW(term_prime          ) = {'addop', 'relop', 'RBRACKET', 'COMMA', 'RPAREN'}
-FOLLOW(type_spec           ) = {'SEMICOLON', 'RPAREN'}
-FOLLOW(var_or_proc_call    ) = set()
-FOLLOW(var_or_proc_tail    ) = set()
+FOLLOW(subprogram_decls    ) = {'KEYWORD_begin'}
+FOLLOW(subprogram_head     ) = {'KEYWORD_begin', 'KEYWORD_var'}
+FOLLOW(term                ) = {'LE', 'RBRACKET', 'KEYWORD_then', 'EQ', 'GT', 'KEYWORD_do', 'GE', 'NEQ', 'PLUS', 'COMMA', 'MINUS', 'KEYWORD_else', 'SEMICOLON', 'KEYWORD_or', 'RPAREN', 'KEYWORD_end', 'LT'}
+FOLLOW(term_prime          ) = {'LE', 'RBRACKET', 'KEYWORD_then', 'EQ', 'GT', 'KEYWORD_do', 'GE', 'PLUS', 'NEQ', 'COMMA', 'MINUS', 'KEYWORD_else', 'SEMICOLON', 'KEYWORD_or', 'RPAREN', 'KEYWORD_end', 'LT'}
+FOLLOW(type_spec           ) = {'RPAREN', 'SEMICOLON'}
+FOLLOW(var_or_proc_call    ) = {'KEYWORD_else', 'SEMICOLON', 'KEYWORD_end'}
+FOLLOW(var_or_proc_tail    ) = {'KEYWORD_else', 'SEMICOLON', 'KEYWORD_end'}
 
 ================================================================================
-Total non-terminals: 33
+Total non-terminals: 34
