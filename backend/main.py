@@ -18,6 +18,7 @@ from api import (
     ll1_router,
     lr_router,
     symbol_router,
+    ast_router,
     reports_router,
     upload_router,
     pipeline_router,
@@ -43,6 +44,7 @@ app.include_router(rd_router)
 app.include_router(ll1_router)
 app.include_router(lr_router)
 app.include_router(symbol_router)
+app.include_router(ast_router)
 app.include_router(reports_router)
 app.include_router(pipeline_router)
 
@@ -61,6 +63,7 @@ async def root() -> dict:
             "lr": "POST /run/lr",
             "run_all": "POST /run/all",
             "symbol_table": "GET /symbol-table",
+            "ast": "POST /run/ast, GET /ast",
             "errors": "GET /errors",
             "reports": "GET /reports",
             "status": "GET /status",

@@ -14,6 +14,7 @@ class RunAllResponse(BaseModel):
     rd: Dict[str, Any]
     ll1: Dict[str, Any]
     lr: Dict[str, Any]
+    ast: Dict[str, Any]
     symbol_table: Dict[str, Any]
     errors: Dict[str, Any]
     status: Dict[str, Any]

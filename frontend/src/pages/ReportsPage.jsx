@@ -12,6 +12,8 @@ const FILE_MAP = {
   action_table: 'action_table.txt',
   goto_table: 'goto_table.txt',
   symbol_table: 'symbol_table.txt',
+  ast_json: 'ast.json',
+  ast_tree: 'ast_tree.txt',
   errors: 'errors.txt',
 };
 

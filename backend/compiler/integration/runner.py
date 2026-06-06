@@ -21,6 +21,7 @@ from lr_parser.lr_parser import SLRParser
 from error_handler.error_handler import ErrorHandler, ErrorType
 from symbol_table.symbol import DataType
 from semantic_analyzer import SemanticAnalyzer
+from ast_builder import build_ast_from_file, ast_to_json
 
 from .session import compilation_session
 
@@ -340,10 +341,21 @@ class CompilerRunner:
             lr_errors = self.session.errors[:10]
             self.session.errors = base_errors + ll1_errors + lr_errors
             self.write_errors_file()
+            try:
+                results["ast"] = self.run_ast()
+            except Exception as exc:
+                results["ast"] = {
+                    "success": False,
+                    "ast": {},
+                    "node_count": 0,
+                    "root": "",
+                    "error": str(exc),
+                }
         else:
             results["rd"] = {"accepted": False, "trace": [], "skipped": True}
             results["ll1"] = {"accepted": False, "trace": [], "skipped": True}
             results["lr"] = {"accepted": False, "trace": [], "skipped": True}
+            results["ast"] = {"success": False, "ast": {}, "node_count": 0, "root": "", "skipped": True}
 
         results["symbol_table"] = self.get_symbol_table()
         results["errors"] = self.get_errors()
@@ -369,12 +381,51 @@ class CompilerRunner:
             self.build_symbol_table()
         return {"entries": self.session.symbol_entries}
 
+    def _count_ast_nodes(self, node: Dict[str, Any]) -> int:
+        return 1 + sum(self._count_ast_nodes(child) for child in node.get("children", []))
+
+    def _format_ast_tree(self, node: Dict[str, Any], indent: str = "") -> str:
+        label = str(node.get("type", "Node"))
+        if node.get("value") is not None:
+            label += f": {node['value']}"
+        lines = [indent + label]
+        for child in node.get("children", []):
+            lines.append(self._format_ast_tree(child, indent + "  "))
+        return "\n".join(lines)
+
+    def run_ast(self) -> Dict[str, Any]:
+        path = self._require_source()
+        ast = build_ast_from_file(str(path))
+        self.session.ast_tree = ast
+        self.session.compilation_status = "ast_generated"
+        self._write_file("ast.json", ast_to_json(ast))
+        self._write_file("ast_tree.txt", self._format_ast_tree(ast))
+        return {
+            "success": True,
+            "ast": ast,
+            "node_count": self._count_ast_nodes(ast),
+            "root": ast.get("type", ""),
+        }
+
+    def get_ast(self) -> Dict[str, Any]:
+        if not self.session.ast_tree:
+            return self.run_ast()
+        ast = self.session.ast_tree
+        return {
+            "success": True,
+            "ast": ast,
+            "node_count": self._count_ast_nodes(ast),
+            "root": ast.get("type", ""),
+        }
+
     def get_status(self) -> Dict[str, Any]:
         return {
             "compilation_status": self.session.compilation_status,
             "token_count": self.session.token_statistics.get("total", len(self.session.tokens)),
             "error_count": len(self.session.errors),
             "symbol_count": len(self.session.symbol_entries),
+            "ast_node_count": self._count_ast_nodes(self.session.ast_tree) if self.session.ast_tree else 0,
+            "ast_root": self.session.ast_tree.get("type", "") if self.session.ast_tree else "",
             "token_statistics": self.session.token_statistics,
             "rd_accepted": self.session.rd_accepted,
             "ll1_accepted": self.session.ll1_accepted,
@@ -390,6 +441,8 @@ class CompilerRunner:
             "action_table": "action_table.txt",
             "goto_table": "goto_table.txt",
             "symbol_table": "symbol_table.txt",
+            "ast_json": "ast.json",
+            "ast_tree": "ast_tree.txt",
             "errors": "errors.txt",
             "rd_trace": "rd_trace.txt",
             "predictive_trace": "predictive_trace.txt",

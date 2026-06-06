@@ -52,6 +52,11 @@ export const runLRParser = async () => {
   return data;
 };
 
+export const runAST = async () => {
+  const { data } = await api.post('/run/ast');
+  return data;
+};
+
 export const runAll = async () => {
   const { data } = await api.post('/run/all');
   return data;
@@ -59,6 +64,11 @@ export const runAll = async () => {
 
 export const getSymbolTable = async () => {
   const { data } = await api.get('/symbol-table');
+  return data;
+};
+
+export const getAST = async () => {
+  const { data } = await api.get('/ast');
   return data;
 };
 

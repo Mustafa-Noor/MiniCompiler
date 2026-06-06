@@ -7,6 +7,7 @@ import RDParserPage from './pages/RDParserPage';
 import LL1ParserPage from './pages/LL1ParserPage';
 import LRParserPage from './pages/LRParserPage';
 import SymbolTablePage from './pages/SymbolTablePage';
+import ASTPage from './pages/ASTPage';
 import ErrorsPage from './pages/ErrorsPage';
 import ReportsPage from './pages/ReportsPage';
 
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/ll1-parser" element={<LL1ParserPage />} />
             <Route path="/lr-parser" element={<LRParserPage />} />
             <Route path="/symbol-table" element={<SymbolTablePage />} />
+            <Route path="/ast" element={<ASTPage />} />
             <Route path="/errors" element={<ErrorsPage />} />
             <Route path="/reports" element={<ReportsPage />} />
           </Route>

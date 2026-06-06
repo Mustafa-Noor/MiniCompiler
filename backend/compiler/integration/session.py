@@ -31,6 +31,7 @@ class CompilationSession:
     goto_table: Dict[str, str] = field(default_factory=dict)
 
     symbol_entries: List[Dict[str, Any]] = field(default_factory=list)
+    ast_tree: Dict[str, Any] = field(default_factory=dict)
     errors: List[Dict[str, Any]] = field(default_factory=list)
 
     compilation_status: str = "idle"
@@ -50,6 +51,7 @@ class CompilationSession:
         self.action_table = {}
         self.goto_table = {}
         self.symbol_entries = []
+        self.ast_tree = {}
         self.errors = []
         self.compilation_status = "idle"
 

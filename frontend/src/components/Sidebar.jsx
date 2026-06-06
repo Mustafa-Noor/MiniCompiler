@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   FiHome, FiCode, FiGitBranch, FiLayers, FiCpu,
-  FiDatabase, FiAlertTriangle, FiFileText, FiInfo,
+  FiDatabase, FiAlertTriangle, FiFileText, FiInfo, FiShare2,
 } from 'react-icons/fi';
 import { useState } from 'react';
 import ProjectModal from './ProjectModal';
@@ -14,6 +14,7 @@ const navItems = [
   { to: '/ll1-parser', icon: FiLayers, label: 'LL1 Parser' },
   { to: '/lr-parser', icon: FiCpu, label: 'LR Parser' },
   { to: '/symbol-table', icon: FiDatabase, label: 'Symbol Table' },
+  { to: '/ast', icon: FiShare2, label: 'AST Tree' },
   { to: '/errors', icon: FiAlertTriangle, label: 'Error Handler' },
   { to: '/reports', icon: FiFileText, label: 'Reports' },
 ];
