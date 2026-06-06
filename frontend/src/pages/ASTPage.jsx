@@ -112,42 +112,42 @@ export default function ASTPage() {
           />
         </div>
       ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="space-y-6">
           <div className="glass-card rounded-xl p-5 border border-gray-800/40">
             <div className="flex items-center gap-2 mb-4 text-gray-400">
               <FiShare2 />
               <h3 className="text-sm font-semibold uppercase tracking-wider">Node Tree</h3>
             </div>
-            <div className="max-h-[640px] overflow-auto scrollbar-thin rounded-lg bg-[#101014] border border-gray-800/70 p-6">
+            <div className="max-h-[720px] overflow-auto scrollbar-thin rounded-lg bg-[#101014] border border-gray-800/70 p-8">
               <div className="min-w-max pb-4">
                 <VisualTreeNode node={ast} />
               </div>
             </div>
           </div>
 
-          <div className="glass-card rounded-xl p-5 border border-gray-800/40">
-            <div className="flex items-center gap-2 mb-4 text-gray-400">
-              <FiCode />
-              <h3 className="text-sm font-semibold uppercase tracking-wider">JSON View</h3>
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="glass-card rounded-xl p-5 border border-gray-800/40">
+              <div className="flex items-center gap-2 mb-4 text-gray-400">
+                <FiCode />
+                <h3 className="text-sm font-semibold uppercase tracking-wider">JSON View</h3>
+              </div>
+              <pre className="max-h-[520px] overflow-auto scrollbar-thin rounded-lg bg-[#101014] border border-gray-800/70 p-4 text-xs text-gray-300 font-mono leading-relaxed">
+                {jsonText}
+              </pre>
             </div>
-            <pre className="max-h-[640px] overflow-auto scrollbar-thin rounded-lg bg-[#101014] border border-gray-800/70 p-4 text-xs text-gray-300 font-mono leading-relaxed">
-              {jsonText}
-            </pre>
+
+            <div className="glass-card rounded-xl p-5 border border-gray-800/40">
+              <div className="flex items-center gap-2 mb-4 text-gray-400">
+                <FiChevronRight />
+                <h3 className="text-sm font-semibold uppercase tracking-wider">Outline View</h3>
+              </div>
+              <div className="max-h-[520px] overflow-auto scrollbar-thin pr-2">
+                <OutlineTreeNode node={ast} />
+              </div>
+            </div>
           </div>
         </div>
       )}
-
-      {hasAst ? (
-        <div className="glass-card rounded-xl p-5 border border-gray-800/40">
-          <div className="flex items-center gap-2 mb-4 text-gray-400">
-            <FiChevronRight />
-            <h3 className="text-sm font-semibold uppercase tracking-wider">Outline View</h3>
-          </div>
-          <div className="max-h-[420px] overflow-auto scrollbar-thin pr-2">
-            <OutlineTreeNode node={ast} />
-          </div>
-        </div>
-      ) : null}
     </motion.div>
   );
 }
