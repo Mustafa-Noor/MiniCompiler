@@ -4,17 +4,46 @@ import { useCompiler } from '../context/CompilerContext';
 import DataTable from '../components/DataTable';
 import SourceEditor from '../components/SourceEditor';
 
+const getTokenStyle = (type) => {
+  if (type?.startsWith('KEYWORD')) {
+    return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+  }
+  if (type === 'ID') {
+    return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
+  }
+  if (type === 'NUMBER') {
+    return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+  }
+  if (type === 'EOF') {
+    return 'bg-red-500/10 text-red-400 border-red-500/20';
+  }
+  
+  const isOperator = ['PLUS', 'MINUS', 'MULTIPLY', 'DIVIDE', 'ASSIGN', 'EQ', 'NEQ', 'LT', 'LE', 'GT', 'GE', 'DOUBLE_DOT', 'relop', 'mulop'].includes(type);
+  if (isOperator) {
+    return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+  }
+  return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
+};
+
 const columns = [
   {
     key: 'token_type',
-    label: 'Token',
+    label: 'Token Type',
     render: (v) => (
-      <span className={v?.startsWith('KEYWORD') ? 'text-blue-400' : v === 'ID' ? 'text-cyan-300' : v === 'NUMBER' ? 'text-green-400' : 'text-orange-300'}>
+      <span className={`inline-block px-2.5 py-0.5 rounded text-xs font-semibold font-sans border ${getTokenStyle(v)}`}>
         {v}
       </span>
     ),
   },
-  { key: 'lexeme', label: 'Lexeme' },
+  {
+    key: 'lexeme',
+    label: 'Lexeme',
+    render: (v) => (
+      <span className="font-mono text-xs px-2 py-0.5 rounded bg-gray-800/60 border border-gray-700/50 text-gray-200">
+        {v}
+      </span>
+    ),
+  },
   { key: 'line', label: 'Line' },
   { key: 'column', label: 'Column' },
 ];
@@ -47,9 +76,17 @@ export default function LexerPage() {
             ['Numbers', tokenStats.numbers],
             ['Operators', tokenStats.operators],
           ].map(([label, val]) => (
-            <div key={label} className="glass-card rounded-lg p-3 text-center">
-              <p className="text-xs text-gray-500 uppercase">{label}</p>
-              <p className="text-xl font-bold text-white">{val || 0}</p>
+            <div key={label} className="glass-card rounded-xl p-4 flex items-center justify-between border border-gray-800/40 hover:border-gray-700/50 hover:bg-gray-800/10 transition-all">
+              <div>
+                <p className="text-[10px] text-gray-500 uppercase font-semibold tracking-wider">{label}</p>
+                <p className="text-2xl font-black text-white mt-1">{val || 0}</p>
+              </div>
+              <div className={`w-2.5 h-2.5 rounded-full ${
+                label === 'Keywords' ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]' :
+                label === 'Identifiers' ? 'bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.6)]' :
+                label === 'Numbers' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' :
+                'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)]'
+              }`} />
             </div>
           ))}
         </div>

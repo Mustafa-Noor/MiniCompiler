@@ -78,3 +78,86 @@ body {
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+/* Custom Table Enhancements */
+.search-highlight {
+  background-color: rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+  padding: 0 2px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+.table-crosshair-row:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.table-crosshair-cell {
+  position: relative;
+  transition: background-color 0.15s ease;
+}
+
+.table-crosshair-cell:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Sticky layout for massive parsing tables */
+.sticky-column {
+  position: sticky;
+  left: 0;
+  background: #18181c;
+  z-index: 10;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+}
+
+th.sticky-column {
+  z-index: 20;
+  background: #252528;
+}
+
+/* Parser Action Badges */
+.badge-slr {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.025em;
+  font-family: var(--font-mono);
+}
+
+.badge-slr-shift {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.badge-slr-reduce {
+  background-color: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.badge-slr-accept {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+.badge-slr-empty {
+  color: rgba(255, 255, 255, 0.15);
+  font-weight: 400;
+}
+

@@ -85,6 +85,51 @@ class SemanticAnalyzer:
         
         return True
     
+    def check_assignment_target(self, name: str, line: int, column: int) -> bool:
+        """Check if name can appear on the left side of an assignment."""
+        symbol = self.symbol_table.lookup(name)
+        if symbol is None:
+            self.error_handler.add_semantic_error(
+                line, column,
+                f"Undeclared identifier: {name}",
+                name,
+                "Undeclared identifier",
+            )
+            return False
+        if symbol.kind in (SymbolKind.VARIABLE, SymbolKind.ARRAY, SymbolKind.FUNCTION):
+            return True
+        self.error_handler.add_semantic_error(
+            line, column,
+            f"'{name}' cannot be assigned to",
+            name,
+            "Invalid assignment target",
+        )
+        return False
+
+    def check_call_with_args(self, name: str, arg_count: int,
+                             line: int, column: int) -> bool:
+        """Check a procedure or function call with arguments."""
+        symbol = self.symbol_table.lookup(name)
+        if symbol is None:
+            self.error_handler.add_semantic_error(
+                line, column,
+                f"Undeclared identifier: {name}",
+                name,
+                "Undeclared identifier",
+            )
+            return False
+        if symbol.kind == SymbolKind.PROCEDURE:
+            return True
+        if symbol.kind == SymbolKind.FUNCTION:
+            return self.check_function_call(name, arg_count, line, column)
+        self.error_handler.add_semantic_error(
+            line, column,
+            f"'{name}' is not callable",
+            name,
+            "Invalid call",
+        )
+        return False
+
     def check_variable_access(self, name: str, line: int, column: int) -> bool:
         """
         Check if variable is accessible.
@@ -291,6 +336,34 @@ class SemanticAnalyzer:
         except RuntimeError as e:
             self.error_handler.add_semantic_error(line, column, str(e), name)
             return False
+
+    def declare_array(self, name: str, element_type: DataType,
+                      lower: int, upper: int,
+                      line: int, column: int) -> bool:
+        """
+        Declare an array.
+        
+        Args:
+            name: Array name
+            element_type: Type of array elements
+            lower: Lower index bound
+            upper: Upper index bound
+            line: Line number
+            column: Column number
+            
+        Returns:
+            True if successful, False if duplicate
+        """
+        if not self.check_duplicate_declaration(name, line, column):
+            return False
+        
+        try:
+            self.symbol_table.declare_array(name, element_type, lower, upper, line, column)
+            return True
+        except RuntimeError as e:
+            self.error_handler.add_semantic_error(line, column, str(e), name)
+            return False
+
     
     def declare_function(self, name: str, return_type: DataType,
                         line: int, column: int) -> bool:

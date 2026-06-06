@@ -5,6 +5,7 @@ from .lr_parser import router as lr_router
 from .symbol_table import router as symbol_router
 from .reports import router as reports_router
 from .upload import router as upload_router
+from .pipeline import router as pipeline_router
 
 __all__ = [
     "lexer_router",
@@ -14,4 +15,5 @@ __all__ = [
     "symbol_router",
     "reports_router",
     "upload_router",
+    "pipeline_router",
 ]

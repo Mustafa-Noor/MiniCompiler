@@ -786,7 +786,7 @@ State 117:
   SEMICOLON       → reduce 48 (factor)
 
 State 118:
-  KEYWORD_else    → reduce 36 (else_part)
+  KEYWORD_else    → shift 130
   KEYWORD_end     → reduce 36 (else_part)
   SEMICOLON       → reduce 36 (else_part)
 

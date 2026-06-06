@@ -1,12 +1,12 @@
 import { useRef } from 'react';
-import { FiUpload, FiPlay } from 'react-icons/fi';
+import { FiUpload, FiPlay, FiZap } from 'react-icons/fi';
 import { useCompiler } from '../context/CompilerContext';
 
 export default function SourceEditor({ showCompileButtons = true }) {
   const fileRef = useRef(null);
   const {
     sourceCode, setSourceCode, filename,
-    uploadSource, runLexerAction, runRDAction, runLL1Action, runLRAction,
+    uploadSource, runAllAction, runLexerAction, runRDAction, runLL1Action, runLRAction,
   } = useCompiler();
 
   const lines = sourceCode.split('\n');
@@ -39,6 +39,12 @@ export default function SourceEditor({ showCompileButtons = true }) {
           </button>
           {showCompileButtons && (
             <>
+              <button
+                onClick={runAllAction}
+                className={`${btnClass} bg-emerald-600 text-white ring-1 ring-emerald-400/40 shadow-[0_0_10px_rgba(16,185,129,0.25)]`}
+              >
+                <FiZap /> Run All
+              </button>
               <button onClick={runLexerAction} className={`${btnClass} bg-blue-600/80 text-white`}>
                 <FiPlay /> Lexer
               </button>

@@ -146,15 +146,71 @@ export function CompilerProvider({ children }) {
     return data;
   }), [withLoading]);
 
+  const runAllAction = useCallback(async () => {
+    setLoading(true);
+    setLoadingAction('Running full compilation pipeline...');
+    try {
+      await ensureSourceSaved();
+      const data = await api.runAll();
+
+      const lexer = data.lexer || {};
+      setTokens(lexer.tokens || []);
+      setTokenStats(lexer.statistics || {});
+
+      const rd = data.rd || {};
+      setRdResult({ accepted: rd.accepted ?? null, trace: rd.trace || [] });
+
+      const ll1 = data.ll1 || {};
+      setLl1Result({
+        accepted: ll1.accepted ?? null,
+        first_sets: ll1.first_sets || {},
+        follow_sets: ll1.follow_sets || {},
+        parsing_table: ll1.parsing_table || {},
+        trace: ll1.trace || [],
+      });
+
+      const lr = data.lr || {};
+      setLrResult({
+        accepted: lr.accepted ?? null,
+        action_table: lr.action_table || {},
+        goto_table: lr.goto_table || {},
+        trace: lr.trace || [],
+      });
+
+      setSymbols(data.symbol_table?.entries || []);
+      setErrors(data.errors?.errors || []);
+
+      await refreshStatus();
+
+      const summary = data.errors?.summary;
+      const totalErrors = summary?.total ?? data.errors?.errors?.length ?? 0;
+      if (totalErrors === 0) {
+        addToast('All compilation phases completed successfully', 'success');
+      } else {
+        addToast(`Compilation finished with ${totalErrors} error(s)`, 'error');
+      }
+    } catch (err) {
+      addToast(err.response?.data?.detail || err.message || 'Run All failed', 'error');
+    } finally {
+      setLoading(false);
+      setLoadingAction('');
+    }
+  }, [addToast, ensureSourceSaved, refreshStatus]);
+
   const loadSymbolTable = useCallback(async () => {
     try {
+      await ensureSourceSaved();
       const data = await api.getSymbolTable();
-      setSymbols(data.entries);
+      setSymbols(data.entries || []);
       await refreshStatus();
     } catch (err) {
-      addToast(err.response?.data?.detail || 'Failed to load symbol table', 'error');
+      const detail = err.response?.data?.detail;
+      addToast(
+        typeof detail === 'string' ? detail : 'Failed to load symbol table',
+        'error',
+      );
     }
-  }, [addToast, refreshStatus]);
+  }, [addToast, ensureSourceSaved, refreshStatus]);
 
   const loadErrors = useCallback(async () => {
     try {
@@ -179,7 +235,7 @@ export function CompilerProvider({ children }) {
     loading, loadingAction, toasts,
     status, tokens, tokenStats,
     rdResult, ll1Result, lrResult, symbols, errors, reports,
-    uploadSource, runLexerAction, runRDAction, runLL1Action, runLRAction,
+    uploadSource, runLexerAction, runRDAction, runLL1Action, runLRAction, runAllAction,
     loadSymbolTable, loadErrors, loadReports, refreshStatus, addToast,
   };
 

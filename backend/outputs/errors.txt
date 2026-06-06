@@ -1,1 +1,8 @@
+COMPILATION ERROR SUMMARY
+============================================================
+Total errors: 1
+  Syntax Error: 1
+
+DETAILED ERRORS
+============================================================
 [Syntax Error] Line 1, Col 13: Syntax Error: Line 1, Column 13: Expected (, found ; (SEMICOLON)

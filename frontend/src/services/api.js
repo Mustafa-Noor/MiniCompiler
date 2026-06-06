@@ -52,6 +52,11 @@ export const runLRParser = async () => {
   return data;
 };
 
+export const runAll = async () => {
+  const { data } = await api.post('/run/all');
+  return data;
+};
+
 export const getSymbolTable = async () => {
   const { data } = await api.get('/symbol-table');
   return data;

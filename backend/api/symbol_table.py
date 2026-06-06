@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from compiler.integration.runner import CompilerRunner
@@ -12,10 +12,10 @@ runner = CompilerRunner()
 
 class SymbolEntry(BaseModel):
     name: str
-    kind: str
-    type: str
-    scope: str
-    line: int
+    kind: str = ""
+    type: str = ""
+    scope: str = ""
+    line: int = 0
     column: int = 0
 
 
@@ -25,8 +25,16 @@ class SymbolTableResponse(BaseModel):
 
 @router.get("/symbol-table", response_model=SymbolTableResponse)
 async def get_symbol_table() -> SymbolTableResponse:
-    result = runner.get_symbol_table()
-    return SymbolTableResponse(**result)
+    try:
+        result = runner.get_symbol_table()
+        return SymbolTableResponse(**result)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to build symbol table: {exc}",
+        ) from exc
 
 
 @router.get("/status")

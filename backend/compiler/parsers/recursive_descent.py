@@ -3,7 +3,7 @@ Recursive Descent Parser for Mini Pascal
 Implements top-down parsing with one method per non-terminal
 """
 
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, TYPE_CHECKING
 import sys
 from pathlib import Path
 
@@ -12,6 +12,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from lexer.scanner import Scanner
 from lexer.token import Token, TokenType
+from symbol_table.symbol import DataType
+
+if TYPE_CHECKING:
+    from semantic_analyzer import SemanticAnalyzer
 
 
 class SyntaxError(Exception):
@@ -30,18 +34,22 @@ class RecursiveDescentParser:
     Produces a derivation trace and reports syntax errors.
     """
     
-    def __init__(self, scanner: Scanner):
+    def __init__(self, scanner: Scanner, semantic: Optional["SemanticAnalyzer"] = None):
         """
         Initialize the parser.
         
         Args:
             scanner: Lexical scanner instance
+            semantic: Optional semantic analyzer for symbol table integration
         """
         self.scanner = scanner
+        self.semantic = semantic
         self.current_token = scanner.get_next_token()
         self.trace = []
         self.errors = []
         self.depth = 0
+        self._pending_params: List[Tuple[List[Tuple[str, int, int]], DataType]] = []
+        self._last_expr_count = 0
     
     def _log_entry(self, non_terminal: str):
         """Log entry into a non-terminal"""
@@ -126,6 +134,21 @@ class RecursiveDescentParser:
             self._log_exit('program', False)
             return False
     
+    def _collect_id_list(self) -> List[Tuple[str, int, int]]:
+        """Collect identifier names with source positions."""
+        names: List[Tuple[str, int, int]] = []
+        if self.current_token.token_type != 'ID':
+            return names
+
+        while True:
+            tok = self.current_token
+            names.append((tok.lexeme, tok.line, tok.column))
+            if not self._expect('ID'):
+                break
+            if not self._expect('COMMA'):
+                break
+        return names
+
     def parse_id_list(self) -> bool:
         """
         Parse identifier list.
@@ -133,13 +156,10 @@ class RecursiveDescentParser:
         """
         self._log_entry('id_list')
         try:
-            if not self._expect('ID'):
+            names = self._collect_id_list()
+            if not names:
                 raise SyntaxError("Expected identifier", self.current_token)
-            
-            while self._expect('COMMA'):
-                if not self._expect('ID'):
-                    self._error('identifier after comma')
-            
+
             self._log_exit('id_list', True)
             return True
         except SyntaxError:
@@ -153,24 +173,72 @@ class RecursiveDescentParser:
         """
         self._log_entry('declarations')
         try:
-            # Check for var keyword
-            if self.current_token.token_type == 'KEYWORD_VAR':
-                while self._expect('KEYWORD_VAR'):
-                    if not self.parse_id_list():
-                        self._error('identifier list')
-                    if not self._expect('COLON'):
-                        self._error(':')
-                    if not self.parse_type_spec():
-                        self._error('type specification')
-                    if not self._expect('SEMICOLON'):
-                        self._error(';')
-            
+            while self._expect('KEYWORD_VAR'):
+                names = self._collect_id_list()
+                if not names:
+                    self._error('identifier list')
+                if not self._expect('COLON'):
+                    self._error(':')
+                dtype, arr_bounds = self._parse_type_info()
+                if dtype is None:
+                    self._error('type specification')
+                if not self._expect('SEMICOLON'):
+                    self._error(';')
+                if self.semantic:
+                    for name, line, col in names:
+                        if arr_bounds:
+                            lo, hi = arr_bounds
+                            self.semantic.declare_array(name, dtype, lo, hi, line, col)
+                        else:
+                            self.semantic.declare_variable(name, dtype, line, col)
+
             self._log_exit('declarations', True)
             return True
         except SyntaxError:
             self._log_exit('declarations', False)
             return False
-    
+
+    def _parse_type_info(self) -> Tuple[Optional[DataType], Optional[Tuple[int, int]]]:
+        """Parse a type and return (DataType, optional array bounds)."""
+        if self._expect('KEYWORD_INTEGER'):
+            return DataType.INTEGER, None
+        if self._expect('KEYWORD_REAL'):
+            return DataType.REAL, None
+
+        if self._expect('KEYWORD_ARRAY'):
+            if not self._expect('LBRACKET'):
+                self._error('[')
+            lower = int(self.current_token.lexeme) if self.current_token.token_type == 'NUMBER' else 0
+            if not self._expect('NUMBER'):
+                self._error('number')
+            if not self._expect('DOUBLE_DOT'):
+                self._error('..')
+            upper = int(self.current_token.lexeme) if self.current_token.token_type == 'NUMBER' else 0
+            if not self._expect('NUMBER'):
+                self._error('number')
+            if not self._expect('RBRACKET'):
+                self._error(']')
+            if not self._expect('KEYWORD_OF'):
+                self._error('keyword of')
+            element_type, _ = self._parse_type_info()
+            if element_type is None:
+                self._error('type specification')
+            return element_type, (lower, upper)
+
+        return None, None
+
+    def _declare_pending_params(self, subprogram_name: Optional[str] = None) -> None:
+        """Insert collected parameter names into the current scope."""
+        if not self.semantic:
+            return
+        sub_sym = self.semantic.symbol_table.lookup(subprogram_name) if subprogram_name else None
+        for names, dtype in self._pending_params:
+            for name, line, col in names:
+                self.semantic.declare_variable(name, dtype, line, col)
+                if sub_sym is not None:
+                    sub_sym.add_parameter(name, dtype)
+        self._pending_params = []
+
     def parse_type_spec(self) -> bool:
         """
         Parse type specification.
@@ -178,28 +246,10 @@ class RecursiveDescentParser:
         """
         self._log_entry('type_spec')
         try:
-            if self._expect('KEYWORD_INTEGER') or self._expect('KEYWORD_REAL'):
+            dtype, _ = self._parse_type_info()
+            if dtype is not None:
                 self._log_exit('type_spec', True)
                 return True
-            
-            if self._expect('KEYWORD_ARRAY'):
-                if not self._expect('LBRACKET'):
-                    self._error('[')
-                if not self._expect('NUMBER'):
-                    self._error('number')
-                if not self._expect('DOUBLE_DOT'):
-                    self._error('..')
-                if not self._expect('NUMBER'):
-                    self._error('number')
-                if not self._expect('RBRACKET'):
-                    self._error(']')
-                if not self._expect('KEYWORD_OF'):
-                    self._error('keyword of')
-                if not self.parse_type_spec():
-                    self._error('type specification')
-                self._log_exit('type_spec', True)
-                return True
-            
             self._error('type')
         except SyntaxError:
             self._log_exit('type_spec', False)
@@ -233,18 +283,26 @@ class RecursiveDescentParser:
         subprogram_decl → subprogram_head declarations compound_stmt
         """
         self._log_entry('subprogram_declaration')
+        scope_entered = False
         try:
             if not self.parse_subprogram_head():
                 self._error('subprogram head')
+            scope_entered = self.semantic is not None
             
             self.parse_declarations()
             
             if not self.parse_compound_statement():
                 self._error('compound statement')
+
+            if self.semantic:
+                self.semantic.exit_scope()
+                scope_entered = False
             
             self._log_exit('subprogram_declaration', True)
             return True
         except SyntaxError:
+            if self.semantic and scope_entered:
+                self.semantic.exit_scope()
             self._log_exit('subprogram_declaration', False)
             return False
     
@@ -256,23 +314,41 @@ class RecursiveDescentParser:
         """
         self._log_entry('subprogram_head')
         try:
+            self._pending_params = []
+
             if self._expect('KEYWORD_FUNCTION'):
+                fn_tok = self.current_token
                 if not self._expect('ID'):
                     self._error('identifier')
+                fn_name, fn_line, fn_col = fn_tok.lexeme, fn_tok.line, fn_tok.column
                 if not self.parse_arguments():
                     self._error('arguments')
                 if not self._expect('COLON'):
                     self._error(':')
-                if not self.parse_type_spec():
+                return_type, _ = self._parse_type_info()
+                if return_type is None:
                     self._error('type specification')
+                if not self._expect('SEMICOLON'):
+                    self._error(';')
+                if self.semantic:
+                    self.semantic.declare_function(fn_name, return_type, fn_line, fn_col)
+                    self.semantic.enter_scope()
+                    self._declare_pending_params(fn_name)
                 self._log_exit('subprogram_head', True)
                 return True
             
             if self._expect('KEYWORD_PROCEDURE'):
+                proc_tok = self.current_token
                 if not self._expect('ID'):
                     self._error('identifier')
+                proc_name = proc_tok.lexeme
+                proc_line, proc_col = proc_tok.line, proc_tok.column
                 if not self.parse_arguments():
                     self._error('arguments')
+                if self.semantic:
+                    self.semantic.declare_procedure(proc_name, proc_line, proc_col)
+                    self.semantic.enter_scope()
+                    self._declare_pending_params(proc_name)
                 self._log_exit('subprogram_head', True)
                 return True
             
@@ -306,21 +382,30 @@ class RecursiveDescentParser:
         """
         self._log_entry('parameter_list')
         try:
-            if not self.parse_id_list():
+            groups: List[Tuple[List[Tuple[str, int, int]], DataType]] = []
+
+            names = self._collect_id_list()
+            if not names:
                 self._error('identifier list')
             if not self._expect('COLON'):
                 self._error(':')
-            if not self.parse_type_spec():
+            dtype, _ = self._parse_type_info()
+            if dtype is None:
                 self._error('type specification')
-            
+            groups.append((names, dtype))
+
             while self._expect('SEMICOLON'):
-                if not self.parse_id_list():
+                names = self._collect_id_list()
+                if not names:
                     self._error('identifier list')
                 if not self._expect('COLON'):
                     self._error(':')
-                if not self.parse_type_spec():
+                dtype, _ = self._parse_type_info()
+                if dtype is None:
                     self._error('type specification')
-            
+                groups.append((names, dtype))
+
+            self._pending_params = groups
             self._log_exit('parameter_list', True)
             return True
         except SyntaxError:
@@ -436,10 +521,14 @@ class RecursiveDescentParser:
             # ID-based statement (assignment or procedure call)
             if self.current_token.token_type == 'ID':
                 id_name = self.current_token.lexeme
+                id_line = self.current_token.line
+                id_col = self.current_token.column
                 self._expect('ID')
                 
                 # Check for array subscript
                 if self.current_token.token_type == 'LBRACKET':
+                    if self.semantic:
+                        self.semantic.check_array_access(id_name, id_line, id_col)
                     self._expect('LBRACKET')
                     if not self.parse_expression():
                         self._error('expression')
@@ -455,14 +544,20 @@ class RecursiveDescentParser:
                     self.parse_expression_list()
                     if not self._expect('RPAREN'):
                         self._error(')')
+                    if self.semantic:
+                        self.semantic.check_call_with_args(
+                            id_name, self._last_expr_count, id_line, id_col
+                        )
                 # Check for assignment
                 elif self.current_token.token_type == 'ASSIGN':
+                    if self.semantic:
+                        self.semantic.check_assignment_target(id_name, id_line, id_col)
                     self._expect('ASSIGN')
                     if not self.parse_expression():
                         self._error('expression')
                 else:
-                    # Procedure call without parameters or standalone identifier
-                    pass
+                    if self.semantic:
+                        self.semantic.check_procedure_call(id_name, id_line, id_col)
                 
                 self._log_exit('statement', True)
                 return True
@@ -557,13 +652,23 @@ class RecursiveDescentParser:
         """
         self._log_entry('factor')
         try:
-            if self._expect('ID'):
-                # Check for function call
+            if self.current_token.token_type == 'ID':
+                id_name = self.current_token.lexeme
+                id_line = self.current_token.line
+                id_col = self.current_token.column
+                self._expect('ID')
+
                 if self._expect('LPAREN'):
                     self.parse_expression_list()
                     if not self._expect('RPAREN'):
                         self._error(')')
-                
+                    if self.semantic:
+                        self.semantic.check_function_call(
+                            id_name, self._last_expr_count, id_line, id_col
+                        )
+                elif self.semantic:
+                    self.semantic.check_identifier_declared(id_name, id_line, id_col)
+
                 self._log_exit('factor', True)
                 return True
             
@@ -604,14 +709,19 @@ class RecursiveDescentParser:
         """
         self._log_entry('expression_list')
         try:
-            # Check if there's an expression
-            if self.current_token.token_type not in ('KEYWORD_END', 'KEYWORD_THEN', 'KEYWORD_DO', 'KEYWORD_ELSE', 'SEMICOLON', 'RPAREN', 'RBRACKET', 'EOF'):
+            self._last_expr_count = 0
+            if self.current_token.token_type not in (
+                'KEYWORD_END', 'KEYWORD_THEN', 'KEYWORD_DO', 'KEYWORD_ELSE',
+                'SEMICOLON', 'RPAREN', 'RBRACKET', 'EOF',
+            ):
                 if not self.parse_expression():
                     raise SyntaxError("Expected expression", self.current_token)
-                
+                self._last_expr_count = 1
+
                 while self._expect('COMMA'):
                     if not self.parse_expression():
                         self._error('expression')
+                    self._last_expr_count += 1
             
             self._log_exit('expression_list', True)
             return True

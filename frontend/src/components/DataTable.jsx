@@ -1,6 +1,26 @@
 import { useMemo, useState } from 'react';
-import { FiChevronDown, FiChevronUp, FiSearch } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp, FiSearch, FiX } from 'react-icons/fi';
 import EmptyState from './EmptyState';
+
+function HighlightText({ text, query }) {
+  if (!query) return <span>{text}</span>;
+  const str = String(text ?? '');
+  const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const parts = str.split(new RegExp(`(${escapedQuery})`, 'gi'));
+  return (
+    <span>
+      {parts.map((part, i) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+          <mark key={i} className="search-highlight">
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </span>
+  );
+}
 
 export default function DataTable({
   columns,
@@ -52,33 +72,41 @@ export default function DataTable({
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       {searchable && (
         <div className="flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-[200px]">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(0); }}
               placeholder="Search..."
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-800/60 border border-gray-700 text-sm text-gray-200 outline-none focus:border-blue-500/50"
+              className="w-full pl-10 pr-10 py-2 rounded-lg bg-gray-800/40 border border-gray-700/60 text-sm text-gray-200 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all placeholder-gray-500"
             />
+            {search && (
+              <button
+                onClick={() => { setSearch(''); setPage(0); }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors"
+              >
+                <FiX size={16} />
+              </button>
+            )}
           </div>
         </div>
       )}
-      <div className="overflow-x-auto rounded-xl border border-gray-700/50 scrollbar-thin">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-xl border border-gray-800/80 bg-gray-900/20 backdrop-blur-md scrollbar-thin">
+        <table className="w-full text-sm border-collapse">
           <thead>
-            <tr className="bg-gray-800/80 text-left">
+            <tr className="bg-gray-800/60 text-left border-b border-gray-800/80">
               {columns.map((col) => (
                 <th
                   key={col.key}
                   onClick={() => col.sortable !== false && toggleSort(col.key)}
-                  className={`px-4 py-3 text-xs uppercase tracking-wider text-gray-400 font-semibold ${col.sortable !== false ? 'cursor-pointer hover:text-gray-200' : ''}`}
+                  className={`px-4 py-3 text-xs uppercase tracking-wider text-gray-400 font-semibold transition-colors ${col.sortable !== false ? 'cursor-pointer hover:text-gray-200 hover:bg-gray-800/30' : ''}`}
                 >
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1.5">
                     {col.label}
-                    {sortKey === col.key && (sortDir === 'asc' ? <FiChevronUp /> : <FiChevronDown />)}
+                    {sortKey === col.key && (sortDir === 'asc' ? <FiChevronUp className="text-blue-400" /> : <FiChevronDown className="text-blue-400" />)}
                   </span>
                 </th>
               ))}
@@ -86,10 +114,14 @@ export default function DataTable({
           </thead>
           <tbody>
             {paged.map((row, i) => (
-              <tr key={i} className="border-t border-gray-800/80 hover:bg-gray-800/40 transition-colors">
+              <tr key={i} className="border-b border-gray-800/40 hover:bg-gray-800/20 transition-all table-crosshair-row">
                 {columns.map((col) => (
-                  <td key={col.key} className="px-4 py-2.5 text-gray-300 font-mono text-xs">
-                    {col.render ? col.render(row[col.key], row) : row[col.key]}
+                  <td key={col.key} className="px-4 py-2.5 text-gray-300 font-mono text-xs table-crosshair-cell">
+                    {col.render ? (
+                      col.render(row[col.key], row)
+                    ) : (
+                      <HighlightText text={row[col.key]} query={search} />
+                    )}
                   </td>
                 ))}
               </tr>
@@ -98,15 +130,30 @@ export default function DataTable({
         </table>
       </div>
       {totalPages > 1 && (
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <span>{filtered.length} rows</span>
-          <div className="flex gap-2">
-            <button disabled={page === 0} onClick={() => setPage((p) => p - 1)} className="px-3 py-1 rounded bg-gray-800 disabled:opacity-40">Prev</button>
-            <span className="py-1">{page + 1} / {totalPages}</span>
-            <button disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)} className="px-3 py-1 rounded bg-gray-800 disabled:opacity-40">Next</button>
+        <div className="flex items-center justify-between text-xs text-gray-400 px-1">
+          <span>Showing {page * pageSize + 1} - {Math.min((page + 1) * pageSize, filtered.length)} of {filtered.length} rows</span>
+          <div className="flex gap-2 items-center">
+            <button
+              disabled={page === 0}
+              onClick={() => setPage((p) => p - 1)}
+              className="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800/40 text-gray-300 hover:bg-gray-700/40 disabled:opacity-40 disabled:hover:bg-gray-800/40 disabled:cursor-not-allowed transition-all font-medium"
+            >
+              Prev
+            </button>
+            <span className="px-2 text-gray-400">
+              Page <span className="text-gray-200 font-semibold">{page + 1}</span> of <span className="text-gray-200 font-semibold">{totalPages}</span>
+            </span>
+            <button
+              disabled={page >= totalPages - 1}
+              onClick={() => setPage((p) => p + 1)}
+              className="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800/40 text-gray-300 hover:bg-gray-700/40 disabled:opacity-40 disabled:hover:bg-gray-800/40 disabled:cursor-not-allowed transition-all font-medium"
+            >
+              Next
+            </button>
           </div>
         </div>
       )}
     </div>
   );
 }
+

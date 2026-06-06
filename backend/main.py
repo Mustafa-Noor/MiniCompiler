@@ -20,6 +20,7 @@ from api import (
     symbol_router,
     reports_router,
     upload_router,
+    pipeline_router,
 )
 
 app = FastAPI(
@@ -43,6 +44,7 @@ app.include_router(ll1_router)
 app.include_router(lr_router)
 app.include_router(symbol_router)
 app.include_router(reports_router)
+app.include_router(pipeline_router)
 
 
 @app.get("/")
@@ -57,6 +59,7 @@ async def root() -> dict:
             "rd": "POST /run/rd",
             "ll1": "POST /run/ll1",
             "lr": "POST /run/lr",
+            "run_all": "POST /run/all",
             "symbol_table": "GET /symbol-table",
             "errors": "GET /errors",
             "reports": "GET /reports",

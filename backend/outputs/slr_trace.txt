@@ -4,4 +4,52 @@ Step  State Stack          Symbol Stack                             Input       
 ------------------------------------------------------------------------------------------------------------------------
 Step 1     0                    $                                        program GCD ;                  SHIFT → state 1
 Step 2     0 1                  $ KEYWORD_program                        GCD ; var                      SHIFT → state 3
-Step 3: ERROR - Parse error at state 3, input SEMICOLON
+Step 3: ERROR entry - Syntax error at state 3, input SEMICOLON (';')
+Step 3: RECOVER - pop stack and discard input
+Step 4: ERROR entry - Syntax error at state 1, input KEYWORD_var ('var')
+Step 4: RECOVER - pop stack and discard input
+Step 5: ERROR entry - Syntax error at state 0, input ID ('x')
+Step 5: RECOVER - pop stack and discard input
+Step 6: ERROR entry - Syntax error at state 0, input COMMA (',')
+Step 6: RECOVER - pop stack and discard input
+Step 7: ERROR entry - Syntax error at state 0, input ID ('y')
+Step 7: RECOVER - pop stack and discard input
+Step 8: ERROR entry - Syntax error at state 0, input COLON (':')
+Step 8: RECOVER - pop stack and discard input
+Step 9: ERROR entry - Syntax error at state 0, input KEYWORD_integer ('integer')
+Step 9: RECOVER - pop stack and discard input
+Step 10: ERROR entry - Syntax error at state 0, input SEMICOLON (';')
+Step 10: RECOVER - pop stack and discard input
+Step 11: ERROR entry - Syntax error at state 0, input ID ('result')
+Step 11: RECOVER - pop stack and discard input
+Step 12: ERROR entry - Syntax error at state 0, input COLON (':')
+Step 12: RECOVER - pop stack and discard input
+Step 13: ERROR entry - Syntax error at state 0, input KEYWORD_integer ('integer')
+Step 13: RECOVER - pop stack and discard input
+Step 14: ERROR entry - Syntax error at state 0, input SEMICOLON (';')
+Step 14: RECOVER - pop stack and discard input
+Step 15: ERROR entry - Syntax error at state 0, input KEYWORD_function ('function')
+Step 15: RECOVER - pop stack and discard input
+Step 16: ERROR entry - Syntax error at state 0, input ID ('gcd')
+Step 16: RECOVER - pop stack and discard input
+Step 17: ERROR entry - Syntax error at state 0, input LPAREN ('(')
+Step 17: RECOVER - pop stack and discard input
+Step 18: ERROR entry - Syntax error at state 0, input ID ('a')
+Step 18: RECOVER - pop stack and discard input
+Step 19: ERROR entry - Syntax error at state 0, input COMMA (',')
+Step 19: RECOVER - pop stack and discard input
+Step 20: ERROR entry - Syntax error at state 0, input ID ('b')
+Step 20: RECOVER - pop stack and discard input
+Step 21: ERROR entry - Syntax error at state 0, input COLON (':')
+Step 21: RECOVER - pop stack and discard input
+Step 22: ERROR entry - Syntax error at state 0, input KEYWORD_integer ('integer')
+Step 22: RECOVER - pop stack and discard input
+Step 23: ERROR entry - Syntax error at state 0, input RPAREN (')')
+Step 23: RECOVER - pop stack and discard input
+Step 24: ERROR entry - Syntax error at state 0, input COLON (':')
+Step 24: RECOVER - pop stack and discard input
+Step 25: ERROR entry - Syntax error at state 0, input KEYWORD_integer ('integer')
+Step 25: RECOVER - pop stack and discard input
+Step 26: ERROR entry - Syntax error at state 0, input SEMICOLON (';')
+Step 26: RECOVER - pop stack and discard input
+Step 27: ERROR entry - Syntax error at state 0, input KEYWORD_begin ('begin')

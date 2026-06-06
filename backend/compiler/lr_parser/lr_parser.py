@@ -218,6 +218,16 @@ class SLRParser:
         # Build parser tables
         self._build_item_sets()
         self._build_parsing_tables()
+        self._add_error_entries()
+    
+    def _add_error_entries(self) -> None:
+        """Fill missing ACTION cells with error entries for panic recovery."""
+        terminals = self._get_terminals()
+        for state_id in range(len(self.item_sets)):
+            for terminal in terminals:
+                key = (state_id, terminal)
+                if key not in self.action_table:
+                    self.action_table[key] = ('error', 0)
     
     def _build_production_list(self) -> None:
         """Build list of all productions"""
@@ -343,6 +353,9 @@ class SLRParser:
         input_pos = 0
         trace = []
         step = 0
+        error_count = 0
+        max_errors = 25
+        max_steps = 5000
         
         trace.append("SLR(1) Parser Trace")
         trace.append("=" * 120)
@@ -350,11 +363,20 @@ class SLRParser:
                     f"{'Input':<30} {'Action':<20}")
         trace.append("-" * 120)
         
-        while True:
+        while step < max_steps:
             step += 1
-            current_state = state_stack[-1]
             current_token = tokens[input_pos] if input_pos < len(tokens) else \
                            Token(TokenType.EOF, 'EOF', 0, 0)
+
+            if not state_stack:
+                error_msg = "Parser stack underflow during error recovery"
+                self.error_handler.add_syntax_error(
+                    current_token.line, current_token.column, error_msg,
+                )
+                trace.append(f"Step {step}: FATAL - {error_msg}")
+                return False, '\n'.join(trace), self._error_strings()
+
+            current_state = state_stack[-1]
             
             # Convert token to symbol
             input_symbol = self._token_to_symbol(current_token)
@@ -364,15 +386,48 @@ class SLRParser:
             action = self.action_table.get(action_key)
             
             if action is None:
-                error_msg = f"Parse error at state {current_state}, "
-                error_msg += f"input {input_symbol}"
+                error_msg = (
+                    f"Parse error at state {current_state}, input {input_symbol} "
+                    f"('{current_token.lexeme}')"
+                )
                 self.error_handler.add_syntax_error(
-                    current_token.line, current_token.column, error_msg)
+                    current_token.line, current_token.column, error_msg,
+                    found=current_token.lexeme,
+                )
                 trace.append(f"Step {step}: ERROR - {error_msg}")
-                return False, '\n'.join(trace), [str(e) for e in 
-                                                self.error_handler.get_errors()]
+                error_count += 1
+                if error_count >= max_errors:
+                    return False, '\n'.join(trace), self._error_strings()
+                input_pos += 1
+                trace.append(f"Step {step}: RECOVER - discard '{current_token.lexeme}'")
+                continue
             
             action_type, action_value = action
+            
+            if action_type == 'error':
+                error_msg = (
+                    f"Syntax error at state {current_state}, input {input_symbol} "
+                    f"('{current_token.lexeme}')"
+                )
+                self.error_handler.add_syntax_error(
+                    current_token.line, current_token.column, error_msg,
+                    found=current_token.lexeme,
+                )
+                trace.append(f"Step {step}: ERROR entry - {error_msg}")
+                error_count += 1
+                if error_count >= max_errors:
+                    return False, '\n'.join(trace), self._error_strings()
+                if len(state_stack) > 1:
+                    state_stack.pop()
+                if len(symbol_stack) > 1:
+                    symbol_stack.pop()
+                if input_pos < len(tokens) - 1:
+                    input_pos += 1
+                else:
+                    trace.append(f"Step {step}: RECOVER - abort at EOF")
+                    return False, '\n'.join(trace), self._error_strings()
+                trace.append(f"Step {step}: RECOVER - pop stack and discard input")
+                continue
             
             # Format trace
             state_str = ' '.join(map(str, state_stack[-3:]))
@@ -410,9 +465,13 @@ class SLRParser:
             elif action_type == 'accept':
                 trace.append(f"Step {step:<5} {state_str:<20} {symbol_str:<40} "
                            f"{input_str:<30} ACCEPT")
-                return True, '\n'.join(trace), []
-        
-        return False, '\n'.join(trace), []
+                return True, '\n'.join(trace), self._error_strings()
+
+        trace.append(f"Step {step}: ABORT - exceeded maximum parse steps ({max_steps})")
+        return False, '\n'.join(trace), self._error_strings()
+
+    def _error_strings(self) -> List[str]:
+        return [str(e) for e in self.error_handler.get_errors()]
     
     def _token_to_symbol(self, token: Token) -> str:
         """Convert token to grammar symbol"""
@@ -455,6 +514,22 @@ class SLRParser:
 
         return token_map.get(token_type, token_type)
     
+    def export_action_table(self) -> Dict[str, str]:
+        """Export ACTION table for API/UI (omits internal error recovery cells)."""
+        exported: Dict[str, str] = {}
+        for (state, terminal), (action, value) in self.action_table.items():
+            if action == 'error':
+                continue
+            exported[f"[{state}, {terminal}]"] = f"{action}:{value}"
+        return exported
+
+    def export_goto_table(self) -> Dict[str, str]:
+        """Export GOTO table for API/UI."""
+        return {
+            f"[{state}, {nt}]": str(next_state)
+            for (state, nt), next_state in self.goto_table.items()
+        }
+
     def print_action_table(self) -> str:
         """Generate formatted ACTION table"""
         output = "ACTION Table\n"

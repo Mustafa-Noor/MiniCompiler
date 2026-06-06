@@ -5,7 +5,6 @@ import { useCompiler } from '../context/CompilerContext';
 import StatCard from '../components/StatCard';
 import Pipeline from '../components/Pipeline';
 import SourceEditor from '../components/SourceEditor';
-import TeamSection from '../components/TeamSection';
 import StatusBadge from '../components/StatusBadge';
 
 const CHART_COLORS = ['#569cd6', '#4ec9b0', '#ce9178', '#c586c0', '#dcdcaa'];
@@ -105,7 +104,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <TeamSection />
+
     </motion.div>
   );
 }

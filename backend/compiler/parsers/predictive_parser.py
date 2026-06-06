@@ -3,7 +3,7 @@ LL(1) Predictive Parser for Mini Pascal
 Stack-driven parser using LL(1) parsing table
 """
 
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Set
 import sys
 from pathlib import Path
 
@@ -104,7 +104,8 @@ class PredictiveParser:
         self.stack: List[str] = []
         self.input_tokens: List[Token] = []
         self.trace: List[str] = []
-        self.errors: List[str] = []
+        self.errors: List[Dict[str, object]] = []
+        self.max_errors = 25
         
         # Read all tokens
         self._read_all_tokens()
@@ -155,7 +156,51 @@ class PredictiveParser:
         line = f"Step {step_num:3d}: [{stack_str:50s}] [{input_str:40s}] {action}"
         self.trace.append(line)
     
-    def parse(self) -> Tuple[bool, str, List[str]]:
+    def _record_error(self, message: str, action: str, step: int, stack_top: Optional[str]) -> None:
+        token = self._get_current_token()
+        self.errors.append({
+            'line': token.line,
+            'column': token.column,
+            'message': message,
+            'lexeme': token.lexeme,
+        })
+        self._log_step(step, stack_top, f"ERROR: {action}")
+
+    def _sync_tokens(self) -> Set[str]:
+        """Common synchronization terminals for panic-mode recovery."""
+        return {
+            'SEMICOLON', 'KEYWORD_END', 'EOF', 'RPAREN', 'RBRACKET',
+            'KEYWORD_THEN', 'KEYWORD_ELSE', 'KEYWORD_DO',
+        }
+
+    def _panic_recover(self, stack_non_terminal: str, step: int) -> bool:
+        """
+        Skip input tokens until a symbol in FOLLOW(non_terminal) or sync set.
+        Pop the faulting non-terminal so parsing can continue.
+        """
+        follow = set(self.analyzer.get_follow_set(stack_non_terminal))
+        sync = follow | self._sync_tokens()
+        skipped = 0
+
+        while self.input_pos < len(self.input_tokens):
+            token = self._get_current_token()
+            if token.token_type == 'EOF':
+                break
+            symbol = self._token_to_symbol(token)
+            if symbol in sync:
+                break
+            self._advance()
+            skipped += 1
+            if skipped > 50:
+                break
+
+        if self.stack and self.stack[-1] == stack_non_terminal:
+            self.stack.pop()
+
+        self._log_step(step, stack_non_terminal, f"RECOVER skip {skipped} token(s), pop {stack_non_terminal}")
+        return skipped > 0 or bool(sync & follow)
+
+    def parse(self) -> Tuple[bool, str, List[Dict[str, object]]]:
         """
         Parse using stack-driven LL(1) algorithm.
         
@@ -166,6 +211,7 @@ class PredictiveParser:
         self.stack = ['EOF', 'program']
         self.input_pos = 0
         step = 0
+        recovered = False
         
         # Add header to trace
         self.trace = [
@@ -192,37 +238,38 @@ class PredictiveParser:
                         return True, self._format_trace(), self.errors
                     else:
                         error = f"Expected EOF, found {current_token.lexeme}"
-                        self.errors.append(error)
-                        action = f"ERROR: {error}"
-                        self._log_step(step, top, action)
+                        self._record_error(error, error, step, top)
                         return False, self._format_trace(), self.errors
                 
                 # Terminal on stack
-                elif top in self.TOKEN_TO_SYMBOL.values() or top in self.TERMINALS_SET():
+                elif top in self.TERMINALS_SET():
                     if top == input_symbol or top == current_token.token_type:
                         # Match!
                         action = f"MATCH {top} '{current_token.lexeme}'"
                         self._log_step(step, top, action)
                         self._advance()
                     else:
-                        # Mismatch
                         error = f"Expected {top}, found {current_token.lexeme}"
-                        self.errors.append(error)
-                        action = f"ERROR: {error}"
-                        self._log_step(step, top, action)
-                        return False, self._format_trace(), self.errors
+                        self._record_error(error, error, step, top)
+                        if len(self.errors) >= self.max_errors:
+                            return False, self._format_trace(), self.errors
+                        self._advance()
+                        recovered = True
+                        continue
                 
                 # Non-terminal on stack
                 else:
-                    # Look up production in table
                     production = self.table_gen.get_production(top, input_symbol)
                     
                     if production is None:
                         error = f"No production for [{top}, {input_symbol}]"
-                        self.errors.append(error)
-                        action = f"ERROR: {error}"
-                        self._log_step(step, top, action)
-                        return False, self._format_trace(), self.errors
+                        self._record_error(error, error, step, top)
+                        if len(self.errors) >= self.max_errors:
+                            return False, self._format_trace(), self.errors
+                        if not self._panic_recover(top, step):
+                            return False, self._format_trace(), self.errors
+                        recovered = True
+                        continue
                     
                     # Push production onto stack (reversed)
                     if production != ['EPSILON']:
@@ -240,26 +287,31 @@ class PredictiveParser:
                 return True, self._format_trace(), self.errors
             else:
                 error = f"Unexpected input: {current_token.lexeme}"
-                self.errors.append(error)
-                action = f"ERROR: {error}"
-                self._log_step(step + 1, None, action)
+                self._record_error(error, error, step + 1, None)
                 return False, self._format_trace(), self.errors
         
         except Exception as e:
             error = f"Parser exception: {str(e)}"
-            self.errors.append(error)
-            action = f"ERROR: {error}"
-            self._log_step(step, None, action)
+            token = self._get_current_token()
+            self.errors.append({
+                'line': token.line,
+                'column': token.column,
+                'message': error,
+                'lexeme': token.lexeme,
+            })
+            self._log_step(step, None, f"ERROR: {error}")
             return False, self._format_trace(), self.errors
-    
+
     def TERMINALS_SET(self) -> set:
         """Get set of all terminals"""
         terminals = set()
         for token_type in self.TOKEN_TO_SYMBOL.values():
-            if isinstance(token_type, str):
+            if isinstance(token_type, dict):
+                terminals.update(token_type.values())
+            elif isinstance(token_type, str):
                 terminals.add(token_type)
         return terminals
-    
+
     def _format_trace(self) -> str:
         """Format the trace as a string"""
         return '\n'.join(self.trace)
