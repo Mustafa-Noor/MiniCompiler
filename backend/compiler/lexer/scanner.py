@@ -11,7 +11,11 @@ from .buffer import Buffer
 
 class LexicalError(Exception):
     """Exception for lexical errors"""
-    pass
+
+    def __init__(self, message: str, line: int = 1, column: int = 1):
+        super().__init__(message)
+        self.line = line
+        self.column = column
 
 
 class Scanner:
@@ -68,9 +72,11 @@ class Scanner:
                 self.current_char = self.buffer.get_char()
             
             if self.current_char == '\0':
+                line = self.buffer.get_current_line()
                 raise LexicalError(
-                    f"Line {self.buffer.get_current_line()}: "
-                    "Unterminated comment"
+                    f"Line {line}: Unterminated comment",
+                    line=line,
+                    column=self.buffer.get_current_column(),
                 )
             # Skip the closing '}'
             self.current_char = self.buffer.get_char()
@@ -115,10 +121,12 @@ class Scanner:
             
             # Exponent digits
             if not self.current_char.isdigit():
+                line = self.buffer.get_current_line()
+                column = self.buffer.get_current_column()
                 raise LexicalError(
-                    f"Line {self.buffer.get_current_line()} "
-                    f"Column {self.buffer.get_current_column()}: "
-                    "Invalid scientific notation"
+                    f"Line {line} Column {column}: Invalid scientific notation",
+                    line=line,
+                    column=column,
                 )
             while self.current_char.isdigit():
                 num_str += self.current_char
@@ -234,7 +242,7 @@ class Scanner:
             f"Line {line} Column {column}\n"
             f"Invalid character '{char}'"
         )
-        raise LexicalError(error_msg)
+        raise LexicalError(error_msg, line=line, column=column)
     
     def scan(self):
         """

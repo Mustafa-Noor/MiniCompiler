@@ -85,7 +85,13 @@ export function CompilerProvider({ children }) {
       await ensureSourceSaved();
       const result = await fn();
       await refreshStatus();
-      addToast(`${action} completed successfully`, 'success');
+      if (result?.success === false) {
+        addToast(`${action} failed`, 'error');
+      } else if (result?.accepted === false) {
+        addToast(`${action} finished with errors`, 'error');
+      } else {
+        addToast(`${action} completed successfully`, 'success');
+      }
       return result;
     } catch (err) {
       const msg = err.response?.data?.detail || err.message || 'Operation failed';
@@ -117,8 +123,12 @@ export function CompilerProvider({ children }) {
 
   const runLexerAction = useCallback(() => withLoading('Lexer', 'Running Lexer', async () => {
     const data = await api.runLexer();
-    setTokens(data.tokens);
-    setTokenStats(data.statistics);
+    setTokens(data.tokens || []);
+    setTokenStats(data.statistics || {});
+    if (data.success === false) {
+      const errs = await api.getErrors();
+      setErrors(errs.errors || []);
+    }
     return data;
   }), [withLoading]);
 
