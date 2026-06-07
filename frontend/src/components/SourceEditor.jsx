@@ -4,6 +4,7 @@ import { useCompiler } from '../context/CompilerContext';
 
 export default function SourceEditor({ showCompileButtons = true }) {
   const fileRef = useRef(null);
+  const lineNumbersRef = useRef(null);
   const {
     sourceCode, setSourceCode, filename,
     uploadSource, runAllAction, runLexerAction, runRDAction, runLL1Action, runLRAction,
@@ -22,18 +23,18 @@ export default function SourceEditor({ showCompileButtons = true }) {
 
   return (
     <div className="glass-card rounded-xl overflow-hidden flex flex-col h-full min-h-[320px]">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700/50 bg-[#252526]">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-900/80 bg-slate-950/40 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-red-500/80" />
           <span className="w-3 h-3 rounded-full bg-yellow-500/80" />
           <span className="w-3 h-3 rounded-full bg-green-500/80" />
-          <span className="ml-3 text-sm text-gray-400 font-mono">{filename}</span>
+          <span className="ml-3 text-sm text-slate-400 font-mono">{filename}</span>
         </div>
         <div className="flex items-center gap-2">
           <input ref={fileRef} type="file" accept=".pas,.txt" className="hidden" onChange={handleUpload} />
           <button
             onClick={() => fileRef.current?.click()}
-            className={`${btnClass} bg-gray-700/80 text-gray-300`}
+            className={`${btnClass} bg-slate-900/80 border border-slate-800 text-slate-300 hover:bg-slate-900 hover:text-white`}
           >
             <FiUpload /> Upload
           </button>
@@ -45,10 +46,10 @@ export default function SourceEditor({ showCompileButtons = true }) {
               >
                 <FiZap /> Run All
               </button>
-              <button onClick={runLexerAction} className={`${btnClass} bg-blue-600/80 text-white`}>
+              <button onClick={runLexerAction} className={`${btnClass} bg-sky-600/80 text-white`}>
                 <FiPlay /> Lexer
               </button>
-              <button onClick={runRDAction} className={`${btnClass} bg-purple-600/80 text-white`}>
+              <button onClick={runRDAction} className={`${btnClass} bg-violet-600/80 text-white`}>
                 <FiPlay /> RD
               </button>
               <button onClick={runLL1Action} className={`${btnClass} bg-indigo-600/80 text-white`}>
@@ -62,9 +63,12 @@ export default function SourceEditor({ showCompileButtons = true }) {
         </div>
       </div>
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-12 shrink-0 bg-[#1e1e1e] border-r border-gray-800 py-3 text-right pr-2 select-none">
+        <div 
+          ref={lineNumbersRef}
+          className="w-12 shrink-0 bg-slate-950/30 border-r border-slate-900/60 py-3 text-right pr-2 select-none overflow-hidden"
+        >
           {lines.map((_, i) => (
-            <div key={i} className="editor-line-numbers text-gray-600 leading-[1.6]">
+            <div key={i} className="editor-line-numbers text-slate-600 leading-[1.6]">
               {i + 1}
             </div>
           ))}
@@ -72,9 +76,14 @@ export default function SourceEditor({ showCompileButtons = true }) {
         <textarea
           value={sourceCode}
           onChange={(e) => setSourceCode(e.target.value)}
+          onScroll={(e) => {
+            if (lineNumbersRef.current) {
+              lineNumbersRef.current.scrollTop = e.target.scrollTop;
+            }
+          }}
           spellCheck={false}
-          className="flex-1 bg-[#1e1e1e] text-gray-200 editor-line-numbers p-3 resize-none outline-none border-none leading-[1.6] w-full"
-          style={{ caretColor: '#569cd6' }}
+          className="flex-1 bg-slate-950/10 text-slate-200 editor-line-numbers p-3 resize-none outline-none border-none leading-[1.6] w-full overflow-y-auto scrollbar-thin"
+          style={{ caretColor: '#38bdf8' }}
         />
       </div>
     </div>

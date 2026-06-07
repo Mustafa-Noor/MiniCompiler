@@ -25,7 +25,7 @@ export default function Pipeline() {
 
   return (
     <div className="glass-card rounded-xl p-6">
-      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">
+      <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-6">
         Compilation Pipeline
       </h3>
       <div className="flex flex-col items-center gap-1">
@@ -40,23 +40,23 @@ export default function Pipeline() {
                 transition={{ delay: i * 0.08 }}
                 className={`w-full max-w-xs flex items-center gap-3 px-4 py-3 rounded-lg border transition-all ${
                   active
-                    ? 'border-blue-500/50 bg-blue-500/10 animate-pulse-glow'
+                    ? 'border-sky-500/40 bg-sky-500/10 animate-pulse-glow'
                     : done
                     ? 'border-emerald-500/30 bg-emerald-500/5'
-                    : 'border-gray-700/50 bg-gray-800/30'
+                    : 'border-slate-800/50 bg-slate-900/30'
                 }`}
               >
                 {done ? (
                   <FiCheck className="text-emerald-400 shrink-0" />
                 ) : (
-                  <FiCircle className={`shrink-0 ${active ? 'text-blue-400' : 'text-gray-600'}`} />
+                  <FiCircle className={`shrink-0 ${active ? 'text-sky-400' : 'text-slate-600'}`} />
                 )}
-                <span className={`font-medium ${active ? 'text-blue-300' : done ? 'text-emerald-300' : 'text-gray-500'}`}>
+                <span className={`font-medium ${active ? 'text-sky-300' : done ? 'text-emerald-300' : 'text-slate-500'}`}>
                   {step.label}
                 </span>
               </motion.div>
               {i < steps.length - 1 && (
-                <FiArrowDown className="text-gray-600 my-1" />
+                <FiArrowDown className="text-slate-700 my-1" />
               )}
             </div>
           );

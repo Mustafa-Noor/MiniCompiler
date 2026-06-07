@@ -18,10 +18,10 @@ from api import (
     ll1_router,
     lr_router,
     symbol_router,
-    ast_router,
     reports_router,
     upload_router,
     pipeline_router,
+    ast_router,
 )
 
 app = FastAPI(
@@ -32,7 +32,13 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "http://localhost:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,9 +50,9 @@ app.include_router(rd_router)
 app.include_router(ll1_router)
 app.include_router(lr_router)
 app.include_router(symbol_router)
-app.include_router(ast_router)
 app.include_router(reports_router)
 app.include_router(pipeline_router)
+app.include_router(ast_router)
 
 
 @app.get("/")
@@ -62,8 +68,8 @@ async def root() -> dict:
             "ll1": "POST /run/ll1",
             "lr": "POST /run/lr",
             "run_all": "POST /run/all",
+            "ast": "POST /run/ast",
             "symbol_table": "GET /symbol-table",
-            "ast": "POST /run/ast, GET /ast",
             "errors": "GET /errors",
             "reports": "GET /reports",
             "status": "GET /status",

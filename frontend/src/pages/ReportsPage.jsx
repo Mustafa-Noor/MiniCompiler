@@ -12,8 +12,6 @@ const FILE_MAP = {
   action_table: 'action_table.txt',
   goto_table: 'goto_table.txt',
   symbol_table: 'symbol_table.txt',
-  ast_json: 'ast.json',
-  ast_tree: 'ast_tree.txt',
   errors: 'errors.txt',
 };
 
@@ -36,9 +34,12 @@ export default function ReportsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Reports</h2>
-          <p className="text-gray-500 text-sm mt-1">Download compiler analysis artifacts</p>
+          <p className="text-slate-500 text-sm mt-1">Download compiler analysis artifacts</p>
         </div>
-        <button onClick={loadReports} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-700 text-white text-sm">
+        <button
+          onClick={loadReports}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900/80 border border-slate-800 hover:bg-slate-900 text-slate-300 hover:text-white text-sm font-semibold transition-all transform hover:-translate-y-0.5"
+        >
           <FiRefreshCw /> Refresh
         </button>
       </div>
@@ -47,20 +48,20 @@ export default function ReportsPage() {
         {entries.map(([key, filename]) => (
           <motion.div
             key={key}
-            whileHover={{ scale: 1.02 }}
-            className="glass-card rounded-xl p-5 flex flex-col gap-3"
+            whileHover={{ scale: 1.015 }}
+            className="glass-card rounded-xl p-5 flex flex-col justify-between min-h-[160px]"
           >
             <div>
-              <h3 className="font-semibold text-gray-200">
+              <h3 className="font-semibold text-slate-200 capitalize">
                 {reports.labels?.[key] || key.replace(/_/g, ' ')}
               </h3>
-              <p className="text-xs text-gray-500 font-mono mt-1">{filename}</p>
+              <p className="text-xs text-slate-500 font-mono mt-1">{filename}</p>
             </div>
             <button
               onClick={() => handleDownload(key)}
-              className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-blue-600/80 hover:bg-blue-500 text-white text-sm font-medium transition-all"
+              className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-sky-600/85 hover:bg-sky-500 text-white text-xs font-semibold tracking-wider uppercase transition-all shadow-md shadow-sky-500/10 hover:shadow-sky-500/25 transform hover:-translate-y-0.5 mt-4"
             >
-              <FiDownload /> Download
+              <FiDownload /> Download Report
             </button>
           </motion.div>
         ))}

@@ -67,11 +67,6 @@ export const getSymbolTable = async () => {
   return data;
 };
 
-export const getAST = async () => {
-  const { data } = await api.get('/ast');
-  return data;
-};
-
 export const getErrors = async () => {
   const { data } = await api.get('/errors');
   return data;

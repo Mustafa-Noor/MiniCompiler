@@ -6,11 +6,11 @@ import * as api from '../services/api';
 import EmptyState from '../components/EmptyState';
 
 const severityStyles = {
-  LEXICAL: { bg: 'bg-red-500/10', border: 'border-red-500/30', text: 'text-red-400', dot: 'bg-red-500' },
-  SYNTAX: { bg: 'bg-orange-500/10', border: 'border-orange-500/30', text: 'text-orange-400', dot: 'bg-orange-500' },
-  SEMANTIC: { bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', text: 'text-yellow-400', dot: 'bg-yellow-500' },
-  TYPE: { bg: 'bg-purple-500/10', border: 'border-purple-500/30', text: 'text-purple-400', dot: 'bg-purple-500' },
-  SCOPE: { bg: 'bg-pink-500/10', border: 'border-pink-500/30', text: 'text-pink-400', dot: 'bg-pink-500' },
+  LEXICAL: { bg: 'bg-rose-500/5', border: 'border-rose-500/20', text: 'text-rose-400', dot: 'bg-rose-500' },
+  SYNTAX: { bg: 'bg-amber-500/5', border: 'border-amber-500/20', text: 'text-amber-400', dot: 'bg-amber-500' },
+  SEMANTIC: { bg: 'bg-amber-500/5', border: 'border-amber-500/20', text: 'text-amber-400', dot: 'bg-amber-500' },
+  TYPE: { bg: 'bg-violet-500/5', border: 'border-violet-500/20', text: 'text-violet-400', dot: 'bg-violet-500' },
+  SCOPE: { bg: 'bg-fuchsia-500/5', border: 'border-fuchsia-500/20', text: 'text-fuchsia-400', dot: 'bg-fuchsia-500' },
 };
 
 const categories = ['LEXICAL', 'SYNTAX', 'SEMANTIC', 'TYPE', 'SCOPE'];
@@ -51,7 +51,7 @@ export default function ErrorsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Error Handler</h2>
-          <p className="text-gray-500 text-sm mt-1">Lexical, syntax, and semantic errors</p>
+          <p className="text-slate-500 text-sm mt-1">Lexical, syntax, and semantic errors</p>
         </div>
         <button
           onClick={async () => {
@@ -59,24 +59,24 @@ export default function ErrorsPage() {
             setSummary(data.summary || null);
             loadErrors();
           }}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-700 text-white text-sm"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900/80 border border-slate-800 text-slate-400 hover:bg-slate-900 hover:text-white text-sm font-semibold transition-all transform hover:-translate-y-0.5"
         >
           <FiRefreshCw /> Refresh
         </button>
       </div>
 
       {summary && summary.total > 0 && (
-        <div className="glass-card rounded-xl p-4 flex flex-wrap gap-4 text-sm">
-          <span className="text-gray-300">Total: <strong className="text-white">{summary.total}</strong></span>
+        <div className="glass-card rounded-xl p-4 flex flex-wrap gap-4 text-xs font-semibold tracking-wider uppercase">
+          <span className="text-slate-300">Total Errors: <strong className="text-sky-400 font-black">{summary.total}</strong></span>
           {Object.entries(summary.by_type || {}).map(([type, count]) => (
-            <span key={type} className="text-gray-500">{type}: <span className="text-gray-300">{count}</span></span>
+            <span key={type} className="text-slate-500">{type}: <span className="text-slate-300">{count}</span></span>
           ))}
         </div>
       )}
 
       {!errors.length ? (
         <div className="glass-card rounded-xl">
-          <EmptyState title="No errors" description="Compilation completed without reported errors." />
+          <EmptyState title="No errors reported" description="Compilation completed successfully without errors." />
         </div>
       ) : (
         <div className="space-y-4">
@@ -85,8 +85,8 @@ export default function ErrorsPage() {
             return (
               <div key={category} className={`glass-card rounded-xl p-6 border ${style.border}`}>
                 <div className="flex items-center gap-2 mb-4">
-                  <span className={`w-2 h-2 rounded-full ${style.dot}`} />
-                  <h3 className={`text-sm font-semibold uppercase tracking-wider ${style.text}`}>
+                  <span className={`w-2 h-2 rounded-full ${style.dot} shadow-[0_0_8px_rgba(244,63,94,0.3)]`} />
+                  <h3 className={`text-sm font-bold uppercase tracking-wider ${style.text}`}>
                     {category.replace('_', ' ')} ({items.length})
                   </h3>
                 </div>
@@ -94,13 +94,13 @@ export default function ErrorsPage() {
                   {items.map((err, i) => (
                     <div key={i} className={`p-3 rounded-lg ${style.bg} border ${style.border}`}>
                       <div className="flex items-start justify-between gap-4">
-                        <p className="text-sm text-gray-200">{err.message}</p>
-                        <span className="text-xs text-gray-500 shrink-0 font-mono">
+                        <p className="text-sm text-slate-200">{err.message}</p>
+                        <span className="text-xs text-slate-500 shrink-0 font-mono">
                           L{err.line}:{err.column}
                         </span>
                       </div>
                       {err.lexeme && (
-                        <p className="text-xs text-gray-500 mt-1 font-mono">Lexeme: {err.lexeme}</p>
+                        <p className="text-xs text-slate-500 mt-1 font-mono">Lexeme: {err.lexeme}</p>
                       )}
                     </div>
                   ))}

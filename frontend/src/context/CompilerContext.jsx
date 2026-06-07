@@ -3,10 +3,9 @@ import * as api from '../services/api';
 
 const CompilerContext = createContext(null);
 
-const DEFAULT_SOURCE = `program GCD;
+const DEFAULT_SOURCE = `program GCD(input, output);
 var
-    x, y: integer;
-    result: integer;
+    x, y, result: integer;
 
 function gcd(a, b: integer): integer;
 begin
@@ -34,8 +33,6 @@ export function CompilerProvider({ children }) {
     token_count: 0,
     error_count: 0,
     symbol_count: 0,
-    ast_node_count: 0,
-    ast_root: '',
     token_statistics: {},
     rd_accepted: null,
     ll1_accepted: null,
@@ -51,8 +48,8 @@ export function CompilerProvider({ children }) {
   const [lrResult, setLrResult] = useState({
     accepted: null, action_table: {}, goto_table: {}, trace: [],
   });
+  const [astResult, setAstResult] = useState({ accepted: null, ast: null, errors: [] });
   const [symbols, setSymbols] = useState([]);
-  const [astResult, setAstResult] = useState({ success: false, ast: {}, node_count: 0, root: '' });
   const [errors, setErrors] = useState([]);
   const [reports, setReports] = useState({ reports: {}, labels: {} });
 
@@ -152,6 +149,7 @@ export function CompilerProvider({ children }) {
   const runASTAction = useCallback(() => withLoading('AST Builder', 'Building AST', async () => {
     const data = await api.runAST();
     setAstResult(data);
+    if (data.errors?.length) setErrors(data.errors);
     return data;
   }), [withLoading]);
 
@@ -184,14 +182,6 @@ export function CompilerProvider({ children }) {
         action_table: lr.action_table || {},
         goto_table: lr.goto_table || {},
         trace: lr.trace || [],
-      });
-
-      const ast = data.ast || {};
-      setAstResult({
-        success: ast.success || false,
-        ast: ast.ast || {},
-        node_count: ast.node_count || 0,
-        root: ast.root || '',
       });
 
       setSymbols(data.symbol_table?.entries || []);
@@ -229,18 +219,6 @@ export function CompilerProvider({ children }) {
     }
   }, [addToast, ensureSourceSaved, refreshStatus]);
 
-  const loadAST = useCallback(async () => {
-    try {
-      await ensureSourceSaved();
-      const data = await api.getAST();
-      setAstResult(data);
-      await refreshStatus();
-    } catch (err) {
-      const detail = err.response?.data?.detail;
-      addToast(typeof detail === 'string' ? detail : 'Failed to load AST', 'error');
-    }
-  }, [addToast, ensureSourceSaved, refreshStatus]);
-
   const loadErrors = useCallback(async () => {
     try {
       const data = await api.getErrors();
@@ -263,9 +241,9 @@ export function CompilerProvider({ children }) {
     sourceCode, setSourceCode, filename, setFilename,
     loading, loadingAction, toasts,
     status, tokens, tokenStats,
-    rdResult, ll1Result, lrResult, symbols, astResult, errors, reports,
+    rdResult, ll1Result, lrResult, astResult, symbols, errors, reports,
     uploadSource, runLexerAction, runRDAction, runLL1Action, runLRAction, runASTAction, runAllAction,
-    loadSymbolTable, loadAST, loadErrors, loadReports, refreshStatus, addToast,
+    loadSymbolTable, loadErrors, loadReports, refreshStatus, addToast,
   };
 
   return (

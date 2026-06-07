@@ -56,11 +56,11 @@ export default function LexerPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Lexer</h2>
-          <p className="text-gray-500 text-sm mt-1">Token stream from lexical analysis</p>
+          <p className="text-slate-500 text-sm mt-1">Token stream from lexical analysis</p>
         </div>
         <button
           onClick={runLexerAction}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-all"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold transition-all transform hover:-translate-y-0.5 shadow-lg shadow-sky-500/20 hover:shadow-sky-500/30"
         >
           <FiPlay /> Run Lexer
         </button>
@@ -76,16 +76,16 @@ export default function LexerPage() {
             ['Numbers', tokenStats.numbers],
             ['Operators', tokenStats.operators],
           ].map(([label, val]) => (
-            <div key={label} className="glass-card rounded-xl p-4 flex items-center justify-between border border-gray-800/40 hover:border-gray-700/50 hover:bg-gray-800/10 transition-all">
+            <div key={label} className="glass-card rounded-xl p-4 flex items-center justify-between transition-all">
               <div>
-                <p className="text-[10px] text-gray-500 uppercase font-semibold tracking-wider">{label}</p>
+                <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">{label}</p>
                 <p className="text-2xl font-black text-white mt-1">{val || 0}</p>
               </div>
               <div className={`w-2.5 h-2.5 rounded-full ${
-                label === 'Keywords' ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]' :
-                label === 'Identifiers' ? 'bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.6)]' :
-                label === 'Numbers' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' :
-                'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)]'
+                label === 'Keywords' ? 'bg-sky-500 shadow-[0_0_8px_rgba(56,189,248,0.5)]' :
+                label === 'Identifiers' ? 'bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)]' :
+                label === 'Numbers' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
+                'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'
               }`} />
             </div>
           ))}
@@ -93,7 +93,7 @@ export default function LexerPage() {
       )}
 
       <div className="glass-card rounded-xl p-6">
-        <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+        <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
           Token Table ({tokens.length} tokens)
         </h3>
         <DataTable

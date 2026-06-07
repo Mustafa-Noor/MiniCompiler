@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { FiHash, FiAlertTriangle, FiDatabase, FiShare2 } from 'react-icons/fi';
+import { FiHash, FiAlertTriangle, FiDatabase, FiActivity } from 'react-icons/fi';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useCompiler } from '../context/CompilerContext';
 import StatCard from '../components/StatCard';
@@ -10,7 +10,7 @@ import StatusBadge from '../components/StatusBadge';
 const CHART_COLORS = ['#569cd6', '#4ec9b0', '#ce9178', '#c586c0', '#dcdcaa'];
 
 export default function Dashboard() {
-  const { status, tokenStats, rdResult, ll1Result, lrResult, astResult } = useCompiler();
+  const { status, tokenStats, rdResult, ll1Result, lrResult } = useCompiler();
 
   const tokenChartData = [
     { name: 'Keywords', value: tokenStats.keywords || 0 },
@@ -41,22 +41,11 @@ export default function Dashboard() {
         <StatCard title="Errors" value={status.error_count || 0} icon={<FiAlertTriangle />} color="red" />
         <StatCard title="Symbols" value={status.symbol_count || 0} icon={<FiDatabase />} color="purple" />
         <StatCard
-          title="AST Nodes"
-          value={astResult.node_count || status.ast_node_count || 0}
-          icon={<FiShare2 />}
+          title="Status"
+          value={status.compilation_status?.replace(/_/g, ' ') || 'idle'}
+          icon={<FiActivity />}
           color="green"
         />
-      </div>
-
-      <div className="glass-card rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Compilation Status</p>
-          <p className="text-gray-100 font-semibold">{status.compilation_status?.replace(/_/g, ' ') || 'idle'}</p>
-        </div>
-        <div className="text-left sm:text-right">
-          <p className="text-xs text-gray-500 uppercase tracking-wider">AST Root</p>
-          <p className="text-cyan-300 font-mono">{astResult.root || status.ast_root || '-'}</p>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
