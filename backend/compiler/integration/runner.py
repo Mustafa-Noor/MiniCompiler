@@ -243,6 +243,7 @@ class CompilerRunner:
             scanner.close()
         except LexicalError as exc:
             self._record_lexical_failure(exc, merge=merge_errors)
+            self.session.ll1_accepted = False
             self.session.ll1_trace = []
             self.session.compilation_status = "lexical_error"
             return {
@@ -254,19 +255,21 @@ class CompilerRunner:
             }
 
         trace = trace_str.splitlines() if trace_str else []
-        error_handler = ErrorHandler()
-        for err in parse_errors:
-            if isinstance(err, dict):
-                error_handler.add_syntax_error(
-                    int(err.get("line", 1)),
-                    int(err.get("column", 1)),
-                    str(err.get("message", "Syntax error")),
-                    found=str(err.get("lexeme", "")),
-                )
-            else:
-                error_handler.add_syntax_error(1, 1, str(err))
+        if not accepted:
+            error_handler = ErrorHandler()
+            for err in parse_errors:
+                if isinstance(err, dict):
+                    error_handler.add_syntax_error(
+                        int(err.get("line", 1)),
+                        int(err.get("column", 1)),
+                        str(err.get("message", "Syntax error")),
+                        found=str(err.get("lexeme", "")),
+                    )
+                else:
+                    error_handler.add_syntax_error(1, 1, str(err))
+            self._finalize_errors(error_handler, merge=merge_errors)
 
-        self._finalize_errors(error_handler, merge=merge_errors)
+        self.session.ll1_accepted = accepted
         self.session.ll1_trace = trace
         self.session.first_sets = first_sets
         self.session.follow_sets = follow_sets
@@ -330,13 +333,14 @@ class CompilerRunner:
             }
         trace = trace_str.splitlines() if trace_str else []
 
-        if slr.error_handler.has_errors():
-            self._finalize_errors(slr.error_handler, merge=merge_errors)
-        elif errors:
-            error_handler = ErrorHandler()
-            for err in errors:
-                error_handler.add_syntax_error(1, 1, str(err))
-            self._finalize_errors(error_handler, merge=merge_errors)
+        if not accepted:
+            if slr.error_handler.has_errors():
+                self._finalize_errors(slr.error_handler, merge=merge_errors)
+            elif errors:
+                error_handler = ErrorHandler()
+                for err in errors:
+                    error_handler.add_syntax_error(1, 1, str(err))
+                self._finalize_errors(error_handler, merge=merge_errors)
 
         self.session.lr_accepted = accepted
         self.session.lr_trace = trace
@@ -387,15 +391,8 @@ class CompilerRunner:
 
         if lexer_result.get("success"):
             results["rd"] = self.run_rd_parser()
-            base_errors = list(self.session.errors)
-
-            results["ll1"] = self.run_ll1_parser(merge_errors=False)
-            ll1_errors = self.session.errors[:10]
-            self.session.errors = base_errors + ll1_errors
-
-            results["lr"] = self.run_lr_parser(merge_errors=False)
-            lr_errors = self.session.errors[:10]
-            self.session.errors = base_errors + ll1_errors + lr_errors
+            results["ll1"] = self.run_ll1_parser(merge_errors=True)
+            results["lr"] = self.run_lr_parser(merge_errors=True)
             self.write_errors_file()
             try:
                 results["ast"] = self.run_ast()

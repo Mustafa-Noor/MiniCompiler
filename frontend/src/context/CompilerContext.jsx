@@ -230,10 +230,24 @@ export function CompilerProvider({ children }) {
 
       const summary = data.errors?.summary;
       const totalErrors = summary?.total ?? data.errors?.errors?.length ?? 0;
-      if (totalErrors === 0) {
+      const lexerFailed = lexer.success === false;
+      const rdRejected = rd.accepted === false;
+      const ll1Rejected = ll1.accepted === false;
+      const lrRejected = lr.accepted === false;
+
+      if (lexerFailed) {
+        addToast('Compilation failed during lexing', 'error');
+      } else if (rdRejected || ll1Rejected || lrRejected) {
+        const rejected = [
+          rdRejected && 'RD',
+          ll1Rejected && 'LL(1)',
+          lrRejected && 'SLR',
+        ].filter(Boolean).join(', ');
+        addToast(`Compilation failed: ${rejected} parser(s) rejected the input`, 'error');
+      } else if (totalErrors === 0) {
         addToast('All compilation phases completed successfully', 'success');
       } else {
-        addToast(`Compilation finished with ${totalErrors} error(s)`, 'error');
+        addToast(`Compilation completed with ${totalErrors} error(s)`, 'error');
       }
     } catch (err) {
       addToast(err.response?.data?.detail || err.message || 'Run All failed', 'error');
