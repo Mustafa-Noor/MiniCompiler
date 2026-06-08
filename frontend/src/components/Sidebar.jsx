@@ -8,7 +8,7 @@ import { useState } from 'react';
 import ProjectModal from './ProjectModal';
 
 const navItems = [
-  { to: '/', icon: FiHome, label: 'Dashboard' },
+  { to: '/studio', icon: FiHome, label: 'Dashboard' },
   { to: '/lexer', icon: FiCode, label: 'Lexer' },
   { to: '/rd-parser', icon: FiGitBranch, label: 'RD Parser' },
   { to: '/ll1-parser', icon: FiLayers, label: 'LL1 Parser' },

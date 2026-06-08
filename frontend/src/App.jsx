@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CompilerProvider } from './context/CompilerContext';
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard';
+import Landing from './pages/Landing';
 import LexerPage from './pages/LexerPage';
 import RDParserPage from './pages/RDParserPage';
 import LL1ParserPage from './pages/LL1ParserPage';
@@ -16,8 +17,9 @@ export default function App() {
     <CompilerProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route element={<DashboardLayout />}>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/studio" element={<Dashboard />} />
             <Route path="/lexer" element={<LexerPage />} />
             <Route path="/rd-parser" element={<RDParserPage />} />
             <Route path="/ll1-parser" element={<LL1ParserPage />} />
