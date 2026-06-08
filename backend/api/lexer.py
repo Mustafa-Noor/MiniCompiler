@@ -23,10 +23,20 @@ class TokenStatistics(BaseModel):
     total: int = 0
 
 
+class ErrorItem(BaseModel):
+    type: str = ""
+    line: int = 0
+    column: int = 0
+    message: str = ""
+    lexeme: str = ""
+    context: str = ""
+
+
 class LexerResponse(BaseModel):
     success: bool
     tokens: List[TokenItem]
     statistics: TokenStatistics
+    errors: List[ErrorItem] = []
 
 
 @router.post("/run/lexer", response_model=LexerResponse)

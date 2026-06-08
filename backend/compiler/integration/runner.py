@@ -138,25 +138,39 @@ class CompilerRunner:
             self.session.errors = exported
         self.write_errors_file()
 
+    @staticmethod
+    def _empty_token_stats() -> Dict[str, int]:
+        return {"keywords": 0, "identifiers": 0, "numbers": 0, "operators": 0, "total": 0}
+
+    def _record_lexical_failure(
+        self, exc: LexicalError, merge: bool = False
+    ) -> List[Dict[str, Any]]:
+        error_handler = ErrorHandler()
+        error_handler.add_lexical_error(
+            exc.line,
+            exc.column,
+            str(exc),
+            exc.lexeme,
+        )
+        self._finalize_errors(error_handler, merge=merge)
+        self.session.compilation_status = "lexical_error"
+        self.session.tokens = []
+        self.session.token_statistics = self._empty_token_stats()
+        return error_handler.export_errors()
+
     def run_lexer(self) -> Dict[str, Any]:
         path = self._require_source()
-        error_handler = ErrorHandler()
         try:
             scanner = Scanner(str(path))
             tokens = scanner.scan()
             scanner.close()
         except LexicalError as exc:
-            error_handler.add_lexical_error(
-                getattr(exc, "line", 1),
-                getattr(exc, "column", 1),
-                str(exc),
-            )
-            self._finalize_errors(error_handler, merge=False)
-            self.session.compilation_status = "lexical_error"
+            errors = self._record_lexical_failure(exc, merge=False)
             return {
                 "success": False,
                 "tokens": [],
-                "statistics": {"keywords": 0, "identifiers": 0, "numbers": 0, "operators": 0, "total": 0},
+                "statistics": self._empty_token_stats(),
+                "errors": errors,
             }
 
         token_dicts = [self._token_to_dict(t) for t in tokens if t.token_type != "EOF"]
@@ -165,9 +179,15 @@ class CompilerRunner:
         self.session.tokens = token_dicts
         self.session.token_statistics = stats
         self.session.compilation_status = "lexed"
+        self.session.errors = []
         self._write_tokens_file(token_dicts)
 
-        return {"success": True, "tokens": token_dicts, "statistics": stats}
+        return {
+            "success": True,
+            "tokens": token_dicts,
+            "statistics": stats,
+            "errors": [],
+        }
 
     def run_rd_parser(self) -> Dict[str, Any]:
         path = self._require_source()
@@ -175,10 +195,17 @@ class CompilerRunner:
         sa = SemanticAnalyzer(error_handler)
         self._seed_builtins(sa)
 
-        scanner = Scanner(str(path))
-        parser = RecursiveDescentParser(scanner, semantic=sa)
-        accepted = parser.parse_program()
-        scanner.close()
+        try:
+            scanner = Scanner(str(path))
+            parser = RecursiveDescentParser(scanner, semantic=sa)
+            accepted = parser.parse_program()
+            scanner.close()
+        except LexicalError as exc:
+            self._record_lexical_failure(exc, merge=False)
+            self.session.rd_accepted = False
+            self.session.rd_trace = []
+            self.session.compilation_status = "lexical_error"
+            return {"accepted": False, "trace": []}
 
         trace = parser.trace if hasattr(parser, "trace") else []
         self._append_syntax_errors_from_strings(error_handler, parser.errors)
@@ -209,10 +236,22 @@ class CompilerRunner:
             key = f"M[{nt}, {terminal}]"
             parsing_table[key] = " ".join(prod) if prod else "ε"
 
-        scanner = Scanner(str(path))
-        parser = PredictiveParser(scanner)
-        accepted, trace_str, parse_errors = parser.parse()
-        scanner.close()
+        try:
+            scanner = Scanner(str(path))
+            parser = PredictiveParser(scanner)
+            accepted, trace_str, parse_errors = parser.parse()
+            scanner.close()
+        except LexicalError as exc:
+            self._record_lexical_failure(exc, merge=merge_errors)
+            self.session.ll1_trace = []
+            self.session.compilation_status = "lexical_error"
+            return {
+                "accepted": False,
+                "first_sets": first_sets,
+                "follow_sets": follow_sets,
+                "parsing_table": parsing_table,
+                "trace": [],
+            }
 
         trace = trace_str.splitlines() if trace_str else []
         error_handler = ErrorHandler()
@@ -256,7 +295,24 @@ class CompilerRunner:
         action_table = slr.export_action_table()
         goto_table = slr.export_goto_table()
 
-        tokens = Scanner(str(path)).scan()
+        try:
+            scanner = Scanner(str(path))
+            tokens = scanner.scan()
+            scanner.close()
+        except LexicalError as exc:
+            self._record_lexical_failure(exc, merge=merge_errors)
+            self.session.lr_accepted = False
+            self.session.lr_trace = []
+            self.session.action_table = action_table
+            self.session.goto_table = goto_table
+            self.session.compilation_status = "lexical_error"
+            return {
+                "accepted": False,
+                "action_table": action_table,
+                "goto_table": goto_table,
+                "trace": [],
+            }
+
         try:
             accepted, trace_str, errors = slr.parse(tokens)
         except Exception as exc:

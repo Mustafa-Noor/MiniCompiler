@@ -81,6 +81,23 @@ export function CompilerProvider({ children }) {
     await api.saveSource(sourceCode, filename);
   }, [sourceCode, filename]);
 
+  const reportPhaseOutcome = useCallback((action, result) => {
+    if (result?.success === false) {
+      const detail = result.errors?.[0]?.message;
+      addToast(detail ? `Lexer failed: ${detail}` : `${action} failed`, 'error');
+      return;
+    }
+    if (result?.accepted === false) {
+      addToast(`${action} rejected the input`, 'error');
+      return;
+    }
+    if (result?.success === true || result?.accepted === true) {
+      addToast(`${action} completed successfully`, 'success');
+      return;
+    }
+    addToast(`${action} finished`, 'info');
+  }, [addToast]);
+
   const withLoading = useCallback(async (action, label, fn) => {
     setLoading(true);
     setLoadingAction(label);
@@ -88,7 +105,7 @@ export function CompilerProvider({ children }) {
       await ensureSourceSaved();
       const result = await fn();
       await refreshStatus();
-      addToast(`${action} completed successfully`, 'success');
+      reportPhaseOutcome(action, result);
       return result;
     } catch (err) {
       const msg = err.response?.data?.detail || err.message || 'Operation failed';
@@ -98,7 +115,7 @@ export function CompilerProvider({ children }) {
       setLoading(false);
       setLoadingAction('');
     }
-  }, [addToast, ensureSourceSaved, refreshStatus]);
+  }, [addToast, ensureSourceSaved, refreshStatus, reportPhaseOutcome]);
 
   const uploadSource = useCallback(async (file) => {
     setLoading(true);
@@ -120,8 +137,20 @@ export function CompilerProvider({ children }) {
 
   const runLexerAction = useCallback(() => withLoading('Lexer', 'Running Lexer', async () => {
     const data = await api.runLexer();
-    setTokens(data.tokens);
-    setTokenStats(data.statistics);
+    if (data.success) {
+      setTokens(data.tokens || []);
+      setTokenStats(data.statistics || {});
+      setErrors([]);
+    } else {
+      setTokens([]);
+      setTokenStats(data.statistics || {});
+      if (data.errors?.length) {
+        setErrors(data.errors);
+      } else {
+        const errs = await api.getErrors();
+        setErrors(errs.errors || []);
+      }
+    }
     return data;
   }), [withLoading]);
 
@@ -163,7 +192,7 @@ export function CompilerProvider({ children }) {
       const data = await api.runAll();
 
       const lexer = data.lexer || {};
-      setTokens(lexer.tokens || []);
+      setTokens(lexer.success === false ? [] : (lexer.tokens || []));
       setTokenStats(lexer.statistics || {});
 
       const rd = data.rd || {};
